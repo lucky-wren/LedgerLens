@@ -6,10 +6,10 @@
 <title>账镜 LedgerLens · 多业态账目分析</title>
 <meta name="description" content="只吃收银系统导出的文件，把账目算清楚、画成图、说成人话。所有计算都在浏览器里完成。">
 <meta name="theme-color" content="#1d4ed8">
-<meta name="build-version" content="1.2.1">
+<meta name="build-version" content="1.2.2">
 <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./assets/app.css?v=1.2.1">
+<link rel="stylesheet" href="./assets/app.css?v=1.2.2">
 </head>
 <body>
 
@@ -473,12 +473,12 @@
   </div>
 </div>
 
-<script src="./assets/app.js?v=1.2.1"></script>
+<script src="./assets/app.js?v=1.2.2"></script>
 <script>
 /* PWA：只在 http(s) 下注册；file:// 的单文件版不注册 */
 if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js?v=1.2.1').catch(function () {});
+    navigator.serviceWorker.register('./sw.js?v=1.2.2').catch(function () {});
   });
 }
 </script>

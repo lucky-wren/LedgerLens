@@ -2,8 +2,8 @@
 'use strict';
 globalThis.__LEDGERLENS__ = {
   "name": "账镜 LedgerLens",
-  "version": "1.2.1",
-  "buildTime": "2026-11-09T14:20:28.575Z",
+  "version": "1.2.2",
+  "buildTime": "2026-11-09T14:35:49.529Z",
   "defaultCurrency": "¥",
   "lang": "zh-CN",
   "mode": "static",
@@ -1505,7 +1505,7 @@ function documentXml(m, images) {
 LL.buildReportDOCX = function (m) {
   const enc = new TextEncoder();
   const images = [], media = [];
-  const MAX_W = 5000000, MAX_H = 2800000;   // EMU：约 5.5in × 3.1in，一页尽量放两张图
+  const MAX_W = 5600000, MAX_H = 3200000;   // EMU：约 6.1in × 3.5in；源图已高清，放大也不糊
   (m.charts || []).forEach((c, i) => {
     const raw = String(c.dataUrl || '');
     const comma = raw.indexOf(',');
@@ -1847,11 +1847,22 @@ function trendHtml(v,goodWhenUp){
 /* ---------- Canvas 图表基础 ---------- */
 function setup(cv){
   const rect=cv.getBoundingClientRect();
-  const dpr=window.devicePixelRatio||1;
+  /* 渲染倍率：平时跟屏幕像素密度走；导出报告时由 export.js 临时覆盖成
+     「按报告里的显示宽度反推的高倍率」，逻辑坐标 / 字号 / 线宽全部不变，
+     只是位图更密 —— 报告里不会再出现把 400px 小图拉到 900px 的发虚。 */
+  const ov=window.__LL_CHART_SCALE__;
+  let dpr=null;
+  if(typeof ov==='function') dpr=ov(cv,rect);
+  else if(ov&&typeof ov==='object'&&ov[cv.id]!=null) dpr=ov[cv.id];
+  else if(typeof ov==='number'&&isFinite(ov)) dpr=ov;
+  if(dpr==null||!isFinite(dpr)||dpr<1) dpr=window.devicePixelRatio||1;
+  dpr=Math.max(1,Math.min(4,dpr));
   const w=Math.max(200,Math.floor(rect.width)), h=Math.max(120,Math.floor(rect.height));
-  cv.width=w*dpr; cv.height=h*dpr;
-  const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
-  g.clearRect(0,0,w,h);
+  cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+  const g=cv.getContext('2d');
+  const s=cv.width/w;                 // 用实际位图宽反推，避免 round 造成偏差
+  g.setTransform(s,0,0,s,0,0);
+  g.clearRect(0,0,w,h+2);
   g.font='11px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
   return {g:g,w:w,h:h};
 }
@@ -1869,7 +1880,7 @@ function fmtAxis(v,compact){
   return String(Math.round(v));
 }
 function grid(g,W,H,pad,max,min,ticks){
-  g.strokeStyle='#eef2f8'; g.lineWidth=1; g.fillStyle='#8fa0bd'; g.textAlign='right'; g.textBaseline='middle';
+  g.strokeStyle='#e3eaf5'; g.lineWidth=1; g.fillStyle='#5c7090'; g.textAlign='right'; g.textBaseline='middle';
   for(let i=0;i<=ticks;i++){
     const y=pad.t+(H-pad.t-pad.b)*i/ticks;
     g.beginPath(); g.moveTo(pad.l,y+.5); g.lineTo(W-pad.r,y+.5); g.stroke();
@@ -1917,7 +1928,7 @@ function drawLine(cv,labels,values,opt){
     }
     g.beginPath(); values.forEach((v,i)=> i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));
     g.strokeStyle=color; g.lineWidth=2.2; g.lineJoin='round'; g.stroke();
-    g.fillStyle='#8fa0bd'; g.textAlign='center'; g.textBaseline='top';
+    g.fillStyle='#5c7090'; g.textAlign='center'; g.textBaseline='top';
     const step=Math.max(1,Math.ceil(labels.length/8));
     labels.forEach((l,i)=>{ if(i%step===0||i===labels.length-1) g.fillText(String(l).slice(5),X(i),H-pad.b+7); });
     // 均值标注放在左上角空白处，置于折线之上
@@ -1971,7 +1982,7 @@ function drawBar(cv,labels,values,opt){
       g.fillStyle=colors[i%colors.length];
       g.beginPath(); g.roundRect?g.roundRect(pad.l,y,bw,bh,[0,4,4,0]):g.rect(pad.l,y,bw,bh); g.fill();
       g.fillStyle='#33445f'; g.textAlign='right'; g.fillText(String(labels[i]).slice(0,8),pad.l-7,y+bh/2);
-      g.fillStyle='#7285a3'; g.textAlign='left'; g.fillText(opt.fmt?opt.fmt(v):fmtAxis(v),pad.l+bw+6,y+bh/2);
+      g.fillStyle='#465976'; g.textAlign='left'; g.fillText(opt.fmt?opt.fmt(v):fmtAxis(v),pad.l+bw+6,y+bh/2);
     });
     cv.onmousemove=function(e){
       const r=cv.getBoundingClientRect(), my=e.clientY-r.top;
@@ -1997,7 +2008,7 @@ function drawBar(cv,labels,values,opt){
       g.fillStyle=colors[i%colors.length];
       g.beginPath(); g.roundRect?g.roundRect(x,y,bw,bh,[4,4,0,0]):g.rect(x,y,bw,bh); g.fill();
     });
-    g.fillStyle='#8fa0bd'; g.textAlign='center'; g.textBaseline='top';
+    g.fillStyle='#5c7090'; g.textAlign='center'; g.textBaseline='top';
     const st=Math.max(1,Math.ceil(labels.length/12));
     labels.forEach((l,i)=>{ if(i%st===0||i===labels.length-1) g.fillText(String(l),pad.l+step*i+step/2,H-pad.b+7); });
     cv.onmousemove=function(e){
@@ -2022,7 +2033,7 @@ function drawDonut(cv,items,opt){
   const cx=W/2, cy=H/2, R=Math.min(W,H)/2-16, r=R*0.62;
   const total=LL.sum(items,x=>Math.max(0,x.value));
   let a=-Math.PI/2;
-  if(total<=0){ g.fillStyle='#8fa0bd'; g.textAlign='center'; g.fillText('暂无数据',cx,cy); return; }
+  if(total<=0){ g.fillStyle='#5c7090'; g.textAlign='center'; g.fillText('暂无数据',cx,cy); return; }
   items.forEach((it,i)=>{
     const ang=Math.PI*2*Math.max(0,it.value)/total;
     g.beginPath(); g.arc(cx,cy,R,a,a+ang); g.arc(cx,cy,r,a+ang,a,true); g.closePath();
@@ -2033,7 +2044,7 @@ function drawDonut(cv,items,opt){
   g.fillStyle='#16233a'; g.textAlign='center'; g.textBaseline='middle';
   g.font='bold 17px -apple-system,"PingFang SC",sans-serif';
   g.fillText(opt.center||fmtAxis(total),cx,cy-8);
-  g.font='11px -apple-system,"PingFang SC",sans-serif'; g.fillStyle='#7285a3';
+  g.font='11px -apple-system,"PingFang SC",sans-serif'; g.fillStyle='#465976';
   g.fillText(opt.centerSub||'合计',cx,cy+13);
   cv.onmousemove=function(e){
     const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left-cx, my=e.clientY-rect.top-cy;
@@ -2766,6 +2777,36 @@ function exportCSV() {
   toast('纯文本表格已导出（给别的系统用）');
 }
 
+/* ---------- 报告用高清图 ----------
+   页面里 3 列布局每张图只有约 350×190 CSS 像素，devicePixelRatio=1 时
+   toDataURL 得到的就是 350×190 的小图；报告里却被 CSS 拉到约 900px 宽，
+   放大 2.5 倍 → 发虚、文字糊。这里在导出前临时提高渲染倍率重绘一遍：
+   逻辑坐标、字号、线宽全部不变，只是位图更密，取完图立刻恢复正常渲染。 */
+const REPORT_CHART_IDS = ['chartTrend','chartPay','chartCat','chartProfit',
+                          'chartHour','chartWeek','chartStore','chartRefund'];
+const REPORT_IMG_MIN_W = 1200;   // 报告里图片显示约 900~940px，留一点下采样余量
+
+function captureChartsForReport(){
+  const prev = window.__LL_CHART_SCALE__;
+  window.__LL_CHART_SCALE__ = (cv, rect) => {
+    const w = Math.max(200, Math.floor((rect && rect.width) || cv.getBoundingClientRect().width));
+    return Math.max(1.5, Math.min(4, REPORT_IMG_MIN_W / w));
+  };
+  const shots = {};
+  try {
+    renderCharts(state.ctx);       // 同一份数据、同一套绘制函数，只换像素密度
+    REPORT_CHART_IDS.forEach(id => {
+      try { shots[id] = $('#' + id).toDataURL('image/png'); }
+      catch (e) { shots[id] = ''; }
+    });
+  } finally {
+    if (prev === undefined) delete window.__LL_CHART_SCALE__;
+    else window.__LL_CHART_SCALE__ = prev;
+    try { renderCharts(state.ctx); } catch (e) { /* 恢复失败不影响已导出的图 */ }
+  }
+  return shots;
+}
+
 /* ---------- 报告模型：四种格式共用同一份数据 ---------- */
 function snapshotPlain(st, ctx) {
   if (!st || !st.snap) return '';
@@ -2812,11 +2853,10 @@ function reportModel() {
     ['chartRefund', '退款主要出在哪类东西']
   ];
   const sums = chartSummaries(ctx);
-  const chartList = charts.map((c, i) => {
-    let dataUrl = '';
-    try { dataUrl = $('#' + c[0]).toDataURL('image/png'); } catch (e) { dataUrl = ''; }
-    return { title: c[1], dataUrl: dataUrl, summary: sums[i] };
-  });
+  const shots = captureChartsForReport();
+  const chartList = charts.map((c, i) => ({
+    title: c[1], dataUrl: shots[c[0]] || '', summary: sums[i]
+  }));
 
   const sugAll = state.allSuggestions || state.suggestions || [];
   const doneList = sugAll.filter(x => x._state === 'done');
@@ -2948,7 +2988,7 @@ exportActions.forEach(([id, fn]) => {
   if (el) el.addEventListener('click', () => { hideModal('exportModal'); fn(); });
 });
 
-['chartTrend', 'chartPay', 'chartCat', 'chartProfit', 'chartHour', 'chartWeek', 'chartStore', 'chartRefund'].forEach(id => {
+REPORT_CHART_IDS.forEach(id => {
   const cv = document.getElementById(id);
   if (cv) cv.addEventListener('click', e => { if (typeof cv._pick === 'function') applyDrill(id, cv._pick(e)); });
 });
