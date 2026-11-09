@@ -1,0 +1,17 @@
+{
+  "name": "账镜 LedgerLens",
+  "short_name": "账镜",
+  "description": "只吃收银系统导出的文件，把账目算清楚、画成图、说成人话。所有计算都在浏览器里完成。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f5fa",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

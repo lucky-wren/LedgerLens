@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>账镜 LedgerLens · 多业态账目分析</title>
+<meta name="description" content="只吃收银系统导出的文件，把账目算清楚、画成图、说成人话。所有计算都在浏览器里完成。">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="build-version" content="1.1.0">
+<link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./assets/app.css?v=1.1.0">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">账</div>
+    <div><h1>账镜 <span style="font-size:11px;color:var(--muted);font-weight:500">LedgerLens</span></h1><small>多业态账目分析 · 数据只在本机算</small></div>
+  </div>
+  <div class="top-note"><b>● 数据只在这台电脑里</b>　不用装软件、不用连收银系统，也不会把你的账目传到网上。</div>
+  <div class="top-actions">
+    <button class="btn sm guide-btn" id="btnGuide">▶ 3 分钟跟着做一遍</button>
+    <button class="btn sm" id="btnGlossary">这些词啥意思</button>
+    <button class="btn sm" id="btnFeatures">它能帮我做什么</button>
+    <button class="btn sm" id="btnPrint">打印</button>
+    <button class="btn sm" id="btnExportCsv">导出表格</button>
+    <button class="btn sm primary" id="btnReport">导出这份结论</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- ============ 侧栏 ============ -->
+  <div class="side">
+    <div class="panel nav-panel">
+      <div class="panel-h"><h3>这一页按 4 个问题排</h3><span class="hint">点一下就跳过去</span></div>
+      <div class="panel-b">
+        <div class="page-nav">
+          <button class="hero-nav-btn" data-jump="secMoney"><b>①</b> 我到底赚了多少钱</button>
+          <button class="hero-nav-btn" data-jump="secWhere"><b>②</b> 钱是从哪儿来的</button>
+          <button class="hero-nav-btn" data-jump="secDo"><b>③</b> 接下来我该做点什么</button>
+          <button class="hero-nav-btn" data-jump="secCheck"><b>④</b> 哪几笔账要核对一下</button>
+        </div>
+                <div class="nav-tip wide-only">左边这几步会一直跟着你；框里内容多，鼠标放上去能单独往下滚。</div>
+        <div class="nav-tip narrow-only">下面按 4 个问题排，点一下直接跳到那一节。</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>第 1 步 · 把账目放进来</h3><span class="hint">不用连系统</span></div>
+      <div class="panel-b">
+        <div class="sect-label">先看看效果（不用准备任何文件）</div>
+        <div class="src-list">
+          <button class="btn block primary" id="btnDemo"><span class="ico">▦</span><span>用示例账目先看一遍<small>90 天示例，不是你的真实账目</small></span></button>
+        </div>
+
+        <div class="sect-label">试试别家系统的表（栏目名不一样也能认）</div>
+        <div class="src-list">
+          <button class="btn block" data-sample="pos"><span class="ico">▤</span><span>超市收银的日结表<small>看看栏目名不一样会怎样</small></span></button>
+          <button class="btn block" data-sample="wechat"><span class="ico">▤</span><span>微信收款对账单<small>只有钱、没有商品，也能分析</small></span></button>
+          <button class="btn block" data-sample="alipay"><span class="ico">▤</span><span>支付宝对账单<small>第三种写法，照样认得出来</small></span></button>
+        </div>
+
+        <div class="sect-label">换成你自己的账目表</div>
+        <div class="drop" id="dropZone">
+          <b>把文件拖到这里，或点下面按钮选</b>
+          Excel、CSV、TXT、JSON 都能读<br>
+          <span style="font-size:12px">Excel 里可以自己挑要用哪张工作表</span>
+          <button class="btn sm" id="btnPick" style="margin-top:8px">选择文件</button>
+          <input type="file" id="fileInput" multiple accept=".csv,.tsv,.txt,.json,.xlsx" style="display:none">
+        </div>
+        <div class="src-list">
+          <button class="btn block" id="btnPaste"><span class="ico">▧</span><span>从 Excel 复制粘贴<small>框选一片格子，Ctrl+C 过来就行</small></span></button>
+          <button class="btn block" id="btnSampleCsv"><span class="ico">↓</span><span>下载一张空白示例表<small>照着这个格式整理你自己的账</small></span></button>
+          <button class="btn block" id="btnSampleXlsx"><span class="ico">↓</span><span>下载示例 Excel<small>带进价列，拖回来就能看到赚了多少</small></span></button>
+        </div>
+        <div class="srcinfo" id="sourceInfo"><b>现在看的是：</b>示例账目<br>放进来你自己的表之后，这里会写清楚是哪份文件。</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>第 2 步 · 只看你想看的部分</h3><button class="btn ghost sm" id="btnResetFilter">全部重置</button></div>
+      <div class="panel-b">
+        <div class="field-row">
+          <div class="field"><label>开始日期</label><input type="date" id="filterFrom"></div>
+          <div class="field"><label>结束日期</label><input type="date" id="filterTo"></div>
+        </div>
+        <div class="field"><label>哪种生意</label><select id="filterBiz"><option value="all">全部生意</option></select></div>
+        <div class="field"><label>门店</label><select id="filterStore"><option value="">全部门店</option></select></div>
+        <div class="field"><label>支付方式</label><select id="filterPay"><option value="">全部支付方式</option></select></div>
+        <div class="field"><label>哪类商品 / 收入</label><select id="filterCat"><option value="">全部品类</option></select></div>
+        <div class="field"><label>报告上写谁的名字（可留空）</label><input id="reportAuthor" placeholder="比如：王店长 / 财务小李"></div>
+        <div class="srcinfo" id="filterInfo">—</div>
+        <div class="filter-chips" id="filterChips"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>关于现在这份账</h3></div>
+      <div class="panel-b">
+        <div class="srcinfo" id="adapterInfo">
+          <b>能读的表：</b>Excel（.xlsx）、CSV、TXT、JSON、从 Excel 粘贴<br>
+          <b>栏目名不用改：</b>各家系统叫法不同也没关系，放进来时确认一次就行<br>
+          <b>少了列也能算：</b>有「数量 + 单价」就能算出金额；有「进价」或「毛利」就能算赚了多少
+        </div>
+        <details class="tech-fold">
+          <summary>给懂技术的人：字段与扩展说明</summary>
+          <div class="srcinfo" style="margin-top:8px">
+            统一账目模型 16 字段：日期 / 时间 / 单号 / 金额 / 单价 / 成本金额 / 单位成本 / 毛利额 / 收支方向 / 支付方式 / 品类 / 商品 / 数量 / 门店 / 会员 / 业态。<br>
+            自研 XLSX 解析（ZIP + DEFLATE + XML）；采集层与分析层解耦，OCR / 只读库 / 厂商 API 为预留扩展位，本版未实现。
+          </div>
+        </details>
+        <button class="btn sm block" id="btnClearData" style="margin-top:10px">清空我的账目，回到示例</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 主区 ============ -->
+  <div class="main">
+
+    <!-- ===== 一句话结论：进页面第一眼就知道怎么回事 ===== -->
+    <div class="hero" id="heroBox">
+      <div class="hero-top">
+        <span class="hero-badge" id="heroBadge">示例账目</span>
+        <span class="hero-period" id="heroPeriod"></span>
+      </div>
+      <h2 id="heroTitle">正在算…</h2>
+      <p class="hero-sub" id="heroSub"></p>
+      <div class="hero-nums" id="heroNums"></div>
+      <div class="hero-todo" id="heroTodo"></div>
+    </div>
+
+    <div class="sec-head" id="secMoney">
+      <span class="sec-no">1</span>
+      <div><h2>我到底赚了多少钱？</h2><p>下面 8 个数字按你选的时间范围算出来。绿色表示在变好，红色表示要留神。</p></div>
+    </div>
+    <div class="kpis" id="kpiRow"></div>
+
+    <div class="sec-head" id="secWhere">
+      <span class="sec-no">2</span>
+      <div><h2>钱是从哪儿来的？</h2><p>8 张图分别回答：走势、怎么付钱、什么最卖钱、什么最赚、几点最忙、周几最好、哪家店强、退款出在哪。每张图下面都写了「怎么看」，点柱子还能只看那一项。</p></div>
+    </div>
+    <div class="charts" id="chartsArea">
+      <div class="chart-box span2" id="boxTrend">
+        <div class="chart-h">
+          <h3>每天进账多少，是在变好还是变差</h3>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="sub" id="trendSub">—</span>
+            <div class="seg" id="segTrend"><button class="on" data-v="net">进账</button><button data-v="orders">单数</button><button data-v="profit">赚的差价</button></div>
+          </div>
+        </div>
+        <div class="chart-note"><b>怎么看：</b>线往上走就是生意变好；虚线是这段时间的平均水平。点右上角可以改看「单数」或「赚的差价」。<span class="drill">　点折线上的某一天，可以只看那一天。</span></div>
+        <div class="chart-c tall"><canvas id="chartTrend" aria-label="每天进账金额的趋势折线图"></canvas></div>
+      </div>
+
+      <div class="chart-box" id="boxPay">
+        <div class="chart-h"><h3>客人都是怎么付钱的</h3><span class="sub" id="paySub">按实收金额</span></div>
+        <div class="chart-note"><b>怎么看：</b>哪块颜色大，说明客人最常用哪种方式。太集中在一种方式时，记得留个备用收款通道。<span class="drill">　点某一块颜色，可以只看这种收钱方式。</span></div>
+        <div class="chart-c"><canvas id="chartPay" aria-label="各种付款方式占比的环形图"></canvas></div>
+        <div class="legend" id="payLegend"></div>
+      </div>
+
+      <div class="chart-box" id="boxCat">
+        <div class="chart-h">
+          <h3>哪类东西最卖钱</h3>
+          <div class="seg" id="segCat"><button class="on" data-v="net">卖了多少</button><button data-v="profit">赚的差价</button><button data-v="margin">差价占比</button></div>
+        </div>
+        <div class="chart-note"><b>怎么看：</b>柱子越长卖得越多。点右上角改看「赚的差价」，常会发现<b>卖得最多的不一定最赚</b>。<span class="drill">　点一根柱子，可以只看这一类东西。</span></div>
+        <div class="chart-c"><canvas id="chartCat" aria-label="各类商品销售额排行柱状图"></canvas></div>
+      </div>
+
+      <div class="chart-box" id="boxProfit">
+        <div class="chart-h"><h3>哪类东西最赚差价</h3><span class="sub" id="profitSub">毛利额 TOP 8 · 负值表示倒挂</span></div>
+        <div class="chart-note"><b>怎么看：</b>绿色是这类东西赚到的差价；<b>红色是卖一件亏一件</b>，先查是不是售价或进价录错了。<span class="drill">　点一根柱子，可以只看这一类东西。</span></div>
+        <div class="chart-c"><canvas id="chartProfit" aria-label="各类商品赚到的差价柱状图"></canvas></div>
+      </div>
+
+      <div class="chart-box" id="boxHour">
+        <div class="chart-h"><h3>一天里几点最忙</h3><span class="sub" id="hourSub">按成交小时</span></div>
+        <div class="chart-note"><b>怎么看：</b>橙色是晚上 10 点到早上 6 点。把补货、对账、培训挪到矮柱子那几小时，忙的时候只留收银和导购。<span class="drill">　点一根柱子，可以只看那一个小时。</span></div>
+        <div class="chart-c"><canvas id="chartHour" aria-label="一天各小时进账金额柱状图"></canvas></div>
+      </div>
+
+      <div class="chart-box" id="boxWeek">
+        <div class="chart-h"><h3>周几生意最好</h3><span class="sub">日均净营收对比</span></div>
+        <div class="chart-note"><b>怎么看：</b>紫色两根是周末。哪天明显高，就把促销和备货排在它的前一天。<span class="drill">　点一根柱子，可以只看那个星期几。</span></div>
+        <div class="chart-c"><canvas id="chartWeek" aria-label="一周各天平均进账柱状图"></canvas></div>
+      </div>
+
+      <div class="chart-box" id="boxStore">
+        <div class="chart-h"><h3>哪家店 / 哪门生意做得好</h3><span class="sub">净营收</span></div>
+        <div class="chart-note"><b>怎么看：</b>柱子从长到短排。差距特别大时，去看看做得好的那家在卖什么、几点开门。<span class="drill">　点一根柱子，可以只看这一家店。</span></div>
+        <div class="chart-c"><canvas id="chartStore" aria-label="各门店进账对比柱状图"></canvas></div>
+      </div>
+
+      <div class="chart-box" id="boxRefund">
+        <div class="chart-h"><h3>退款主要出在哪类东西</h3><span class="sub">按品类 / 收入项</span></div>
+        <div class="chart-note"><b>怎么看：</b>柱子最长的一类就是退款最集中的地方。先查是不是录错单、重复收款，再查商品本身。<span class="drill">　点一根柱子，可以只看这一类东西的退款。</span></div>
+        <div class="chart-c"><canvas id="chartRefund" aria-label="各类商品退款金额柱状图"></canvas></div>
+      </div>
+    </div>
+
+    <div class="sec-head" id="secDo">
+      <span class="sec-no">3</span>
+      <div><h2>接下来我该做点什么？</h2><p>每条都写明「为什么这么说」和「具体怎么做」，按上面的数字算出来，不是套话。办完可以点「处理过了」，改筛选会跟着变。</p></div>
+    </div>
+    <div class="panel" id="boxSuggest">
+      <div class="panel-h"><h3>可以做的几件事</h3><div class="sug-hint-wrap"><span class="hint" id="sugHint">按当前账目自动重算</span><button class="btn sm" id="btnRules">⚙ 判定标准</button></div></div>
+      <div class="panel-b"><div class="sug-grid" id="suggestList"></div></div>
+    </div>
+
+    <div class="sec-head" id="secCheck">
+      <span class="sec-no">4</span>
+      <div><h2>有没有哪几笔账要核对一下？</h2><p>列出特别高、特别低、金额特别大、时间特别晚的记录。多数是正常大单或活动日，看一眼确认就行。</p></div>
+    </div>
+    <div class="panel" id="boxAnomaly">
+      <div class="panel-h"><h3>建议核对的几笔</h3><span class="hint">忽高忽低的日子 + 金额特别大的单子</span></div>
+      <div class="tbl-wrap"><table id="anomalyTable"></table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>想逐笔查？这里是每一笔账</h3><span class="hint" id="detailHint">按时间倒序 · 当前筛选结果</span></div>
+      <div class="detail-bar">
+        <span class="detail-bar-label">在这一页里找：</span>
+        <input id="detailSearch" placeholder="输单号、商品名、门店、金额…都能找" autocomplete="off">
+        <button class="btn sm" id="btnClearSearch">清空</button>
+        <span class="detail-bar-note">按当前筛选的全部账里查；导出表格仍会包含全部</span>
+      </div>
+      <div class="tbl-wrap"><table id="detailTable"></table></div>
+      <div class="pager">
+        <span id="pageInfo">—</span>
+        <span style="display:flex;gap:6px">
+          <button class="btn sm" id="btnPrev">上一页</button>
+          <button class="btn sm" id="btnNext">下一页</button>
+        </span>
+      </div>
+    </div>
+
+    <div class="foot-note">账镜 LedgerLens · 打开网页就能用，不用安装　|　账目只在这台电脑里算，不会上传　|　<a href="#" id="btnAboutFoot">哪些事它还做不了？</a></div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<!-- ===== 字段映射弹窗 ===== -->
+<div class="mask" id="mapModal">
+  <div class="modal">
+    <div class="modal-h">
+      <div><h3>字段映射 · 把任意表头翻译成统一账目模型</h3><p id="mapSub">已自动识别，可手动修正；同一套表头下次会自动套用</p></div>
+      <button class="btn ghost sm" data-close="mapModal">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="sheet-row" id="sheetRow" style="display:none">
+        <label>工作表</label><select id="sheetSelect"></select>
+        <span class="hint">切换工作表后会按新表头重新识别字段</span>
+      </div>
+      <div class="sheet-row import-row">
+        <label>这次怎么放</label>
+        <select id="importMode">
+          <option value="append">接在后面，重复的自动跳过</option>
+          <option value="replace">用这份换掉现在的</option>
+        </select>
+        <label>金额符号</label>
+        <select id="currencySel">
+          <option value="¥">¥ 人民币</option><option value="$">$ 美元</option>
+          <option value="€">€ 欧元</option><option value="£">£ 英镑</option>
+          <option value="">不显示符号</option>
+        </select>
+        <span class="hint">同一笔账重复放进来会自动跳过；金额符号只是改个显示，不会帮你换算汇率</span>
+      </div>
+      <div class="notice" id="mapNotice">系统已根据表头同义词库自动猜测字段含义。<b>日期</b>与<b>金额</b>为必需字段，其余可留空。</div>
+      <div class="map-grid" id="mapGrid"></div>
+      <div class="preview">
+        <h4>原始文件前 5 行</h4>
+        <div class="tbl-wrap" style="max-height:170px"><table id="rawPreview"></table></div>
+      </div>
+      <div class="preview">
+        <h4>映射结果预览（统一模型）</h4>
+        <div class="tbl-wrap" style="max-height:170px"><table id="mapPreview"></table></div>
+      </div>
+    </div>
+    <div class="modal-f">
+      <label class="chk"><input type="checkbox" id="chkSaveTpl" checked> 记住这套表头的映射模板</label>
+      <div style="display:flex;gap:8px">
+        <button class="btn" data-close="mapModal">取消</button>
+        <button class="btn primary" id="btnApplyMap">确认并分析</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 粘贴弹窗 ===== -->
+<div class="mask" id="pasteModal">
+  <div class="modal sm">
+    <div class="modal-h"><div><h3>粘贴表格文本</h3><p>Excel / WPS 里框选区域后 Ctrl+C，直接粘贴到下面</p></div><button class="btn ghost sm" data-close="pasteModal">✕</button></div>
+    <div class="modal-b">
+      <div class="notice">第一行会被当作表头。支持制表符（从 Excel 粘贴）、逗号、分号分隔，也支持 JSON 数组。</div>
+      <textarea class="paste" id="pasteText" placeholder="交易日期	单据编号	实收金额	结算方式	商品分类	门店名称&#10;2026-11-08	S001	128.50	微信支付	生鲜果蔬	万象汇店"></textarea>
+    </div>
+    <div class="modal-f"><span class="hint" style="font-size:11px;color:var(--muted)">数据仅在本机解析</span><div style="display:flex;gap:8px"><button class="btn" data-close="pasteModal">取消</button><button class="btn primary" id="btnParsePaste">解析并映射</button></div></div>
+  </div>
+</div>
+
+<!-- ===== 使用演示（分步引导） ===== -->
+<div class="mask" id="guideModal">
+  <div class="modal">
+    <div class="modal-h">
+      <div><h3>跟着做一遍，3 分钟就明白</h3><p>不用准备文件、不用懂财务，每一步的按钮都能真的点</p></div>
+      <button class="btn ghost sm" id="btnGuideX">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="guide-tabs" id="guideTabs"></div>
+      <div class="guide-body" id="guideBody"></div>
+    </div>
+    <div class="modal-f">
+      <label class="chk"><input type="checkbox" id="chkNoGuide"> 下次打开不再自动显示</label>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="btnGuidePrev">上一步</button>
+        <button class="btn" id="btnGuideNext">下一步</button>
+        <button class="btn primary" id="btnGuideClose">我会用了，开始看账</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 功能介绍 ===== -->
+<div class="mask" id="featuresModal">
+  <div class="modal">
+    <div class="modal-h"><div><h3>它能帮我做什么</h3><p>用大白话说清楚，不用懂电脑也能看明白</p></div><button class="btn ghost sm" data-close="featuresModal">✕</button></div>
+    <div class="modal-b about">
+      <div class="feat-grid">
+        <div class="feat"><h4>① 打开就能用，不用装、不用求厂商</h4>
+          <p>打开网页就能用，也可以把离线版拷到电脑里双击打开。<b>不用安装软件、不用注册账号</b>，更不用去找收银系统厂商要接口和授权。超市、药店、酒店都能用。</p></div>
+        <div class="feat"><h4>② 各家系统导出的表，都能放进来</h4>
+          <p>Excel、CSV，或者从 Excel 里直接复制粘贴都行。栏目名叫「实收金额」还是「应结订单金额」都没关系，放进来时<b>确认一次栏目对应关系</b>就好，下次同样格式直接认得。同一份表重复放进来也不会把钱算两遍。</p></div>
+        <div class="feat"><h4>③ 一眼看到：收了多少、赚了多少</h4>
+          <p>最上面那段蓝色结论会直接告诉你一共收进多少、扣掉退款后留下多少、跟上一段比是好了还是淡了。下面 8 个数字都配了<b>大白话说明</b>，看不懂的词点「这些词啥意思」。</p></div>
+        <div class="feat"><h4>④ 8 张图，每张都写了「怎么看」</h4>
+          <p>生意走势、客人怎么付钱、哪类东西最卖钱、哪类最赚、几点最忙、周几最好、哪家店强、退款出在哪。<b>每张图下面都有一句人话提示</b>，不用学看图。<b>点一根柱子就能只看那一项</b>（比如只看「房费」或只看周三），点完左边会出现一个小标签，点 × 就退回来。</p></div>
+        <div class="feat"><h4>⑤ 不只给数字，还告诉你下一步做啥</h4>
+          <p>每条建议都写明<b>「为什么这么说」和「可以怎么做」</b>，全是能直接安排的动作，不是专业术语堆砌。办完了点「✓ 处理过了」，它会记下当时的数字；过几天在「已处理」里回看，能直接比「标记时 → 现在」有没有变。觉得提醒太碎，点建议区右上角的「⚙ 判定标准」把线调松一点就行。</p></div>
+        <div class="feat"><h4>⑥ 结论能带走，数据不带走</h4>
+          <p>一键导出<b>带封面的账目结论单</b>：门店、统计区间、对比区间、制表人、一句话结论、4 个大数字、已处理过的事都在第一页，在左栏第 2 步最下面填个制表人名字就能直接交出去，离线能看、能打印。逐笔账也能在这一页直接<b>搜单号或商品名</b>，或导出表格自己再算。所有计算都在这台电脑里完成，<b>账目不会上传到任何地方</b>，看完还能一键清空。</p></div>
+      </div>
+      <div class="notice"><b>最常用的一条路：</b>从收银后台导出日结表 → 拖进左侧 → 确认栏目（尤其看「进价」有没有对上）→ 看最上面那段结论和下面的建议 → 导出报告发给店长。换一家系统，只要重新认一次栏目名。<br><b>这版新增：</b>点柱子只看一项、逐笔搜单号、给建议标记「处理过了」、报告带封面、判定标准自己调。</div>
+
+    </div>
+    <div class="modal-f"><button class="btn" id="btnAboutFromFeat">哪些事它还做不了</button><button class="btn primary" data-close="featuresModal">知道了</button></div>
+  </div>
+</div>
+
+
+
+
+<!-- ===== 判定标准（阈值可调） ===== -->
+<div class="mask" id="rulesModal">
+  <div class="modal">
+    <div class="modal-h"><div><h3>判定标准 · 什么情况才提醒你</h3><p>这些数字决定「什么时候弹一条建议」。改完点保存，上面所有数字和建议会立刻重算。</p></div><button class="btn ghost sm" data-close="rulesModal">✕</button></div>
+    <div class="modal-b">
+      <div class="notice">举例：把「进账涨跌提醒线」从 5% 改成 10%，以后进账只掉了 6% 就不会再说「生意淡了」。标准存在<b>这台电脑</b>，换一台要重新设；随时可以恢复默认。</div>
+      <div class="rules-groups" id="rulesGroups"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" id="btnRulesReset">恢复默认</button>
+      <div style="display:flex;gap:8px"><button class="btn" data-close="rulesModal">取消</button><button class="btn primary" id="btnRulesSave">保存并重新算</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 名词小词典（外行专用） ===== -->
+<div class="mask" id="glossaryModal">
+  <div class="modal sm">
+    <div class="modal-h"><div><h3>这些词到底啥意思</h3><p>全是大白话，看完再回去看数字就不懵了</p></div><button class="btn ghost sm" data-close="glossaryModal">✕</button></div>
+    <div class="modal-b about">
+      <div class="notice"><b>一句话记住：</b>「收了多少钱」不等于「赚了多少钱」。收的钱里要扣掉退款，再扣掉进货成本，剩下的才叫赚的差价；房租、人工、水电还要再扣，那部分本工具暂时算不了。</div>
+      <table class="glossary-tbl">
+        <thead><tr><th>词</th><th>大白话解释</th></tr></thead>
+        <tbody>
+          <tr><td><b>净营收 / 进账</b></td><td>客人实际付进来的钱，扣掉退回去的钱和支出之后，真正留下的那部分。</td></tr>
+          <tr><td><b>毛利额 / 赚的差价</b></td><td>卖价减去进货价，剩下的钱。<b>还没扣房租、人工、水电</b>，所以不等于最后落到口袋的利润。</td></tr>
+          <tr><td><b>毛利率 / 差价占比</b></td><td>每收进来 100 元，里面大概有几元是差价。比如 30% 就是 100 元里有 30 元差价。</td></tr>
+          <tr><td><b>成本 / 进价</b></td><td>你进货花掉的钱。表里没有这一列时，毛利就算不出来，会显示「—」而不是瞎猜一个 0。</td></tr>
+          <tr><td><b>客单价</b></td><td>平均一位客人一次花了多少钱。总进账 ÷ 单数。</td></tr>
+          <tr><td><b>有效订单数 / 单数</b></td><td>这段时间一共做了多少笔生意，同一个单号只算一次。</td></tr>
+          <tr><td><b>退款率</b></td><td>收进来的钱里，有多少又退回给客人了。太高就要查是不是录错单或者商品有问题。</td></tr>
+          <tr><td><b>日均</b></td><td>平均每天进账多少，把没开门的日子也算进去。</td></tr>
+          <tr><td><b>环比 / 跟上期比</b></td><td>拿最近一段时间，跟前面同样长的一段时间比。为了公平，两边都按整周算，星期构成一样。</td></tr>
+          <tr><td><b>成本覆盖率</b></td><td>有多少笔账是带进价的。比如 80%，就说明还有两成没记进价，算毛利时先把它们放在一边，不硬算。</td></tr>
+          <tr><td><b>业态 / 生意类型</b></td><td>你做的是超市、药店还是酒店。不同生意的正常退款率、正常差价比例不一样，所以标准也不同。</td></tr>
+          <tr><td><b>品类</b></td><td>东西的分类，比如「生鲜」「房费」「感冒药」。也用来分酒店里的房费、餐饮、会议等收入项。</td></tr>
+          <tr><td><b>倒挂 / 卖一件亏一件</b></td><td>卖价还没进价高，这类东西卖得越多亏得越多，图上用红色标出来。</td></tr>
+          <tr><td><b>引流品</b></td><td>本身不怎么赚钱、但能把客人引进来的东西（比如便宜的生鲜）。别只看它赚多少，要看它有没有带动别的商品。</td></tr>
+        </tbody>
+      </table>
+      <div class="notice warn" style="margin-top:14px"><b>还有个容易弄错的地方：</b>金额符号（¥ / £ / €）只是改个显示，不会帮你换算汇率。如果一份表里混了几种钱，要先自己折成同一种再放进来。</div>
+    </div>
+    <div class="modal-f"><span></span><button class="btn primary" data-close="glossaryModal">明白了</button></div>
+  </div>
+</div>
+
+<!-- ===== 关于弹窗 ===== -->
+<div class="mask" id="aboutModal">
+  <div class="modal sm">
+    <div class="modal-h"><div><h3>哪些事它还做不了</h3><p>先说清楚边界，免得你白等</p></div><button class="btn ghost sm" data-close="aboutModal">✕</button></div>
+    <div class="modal-b about">
+      <p><b>一句话说清它是干什么的：</b>不进你的收银系统，只「吃它导出来的表」。把超市、药店、酒店后台导出的日结流水或对账单放进来，它帮你算清楚收了多少、赚了多少、哪里要留意、下一步做啥。<b>不需要厂商配合，也不需要网络。</b></p>
+      <div class="notice"><b>它算的是「赚的差价」，不是最后落到口袋的钱。</b>卖价减进价就是差价，房租、人工、水电、平台抽成、税这些还没扣。要看净利，得另外有这些费用数据。</div>
+      <ul>
+        <li><b>现在能做：</b>读 Excel（.xlsx）、CSV、TXT、JSON 和从 Excel 粘贴；栏目名不一样也能认；重复导入自动跳过；可选金额符号；算营收、退款、差价、客人平均消费；画 8 张图（<b>点柱子能只看一项</b>）；逐笔搜单号；给大白话建议（<b>能标记已处理并回看数字</b>）；自己调判定标准；导出带封面的报告和明细。</li>
+        <li><b>现在做不了：</b>老版 .xls、加了密码的 Excel、小票拍照识别、直接连数据库、厂商接口对接、实时到账、多人账号与权限、自动定时拉取、把建议派给某个人的任务系统。这些都是以后才考虑的事，不影响现在算账。判定标准只存在这台电脑，换一台要重新设。</li>
+        <li><b>几个容易弄错的地方：</b>表里没写进价就算不出赚的差价（会显示「—」，不会瞎填 0）；金额符号只是改显示，<b>不会帮你换汇率</b>；一份表里混了几种货币，要先自己折成同一种；每品类各占一列的「宽表」要先整理成一行一笔才能放进来。</li>
+        <li><b>数据在哪：</b>全部在你这台电脑的浏览器里算，不会上传。导入的账目和栏目对照记在本机，刷新还在，点左栏「清空我的账目」即可清掉。</li>
+      </ul>
+      <div class="notice warn"><b>想给多人用、每天自动更新、或者要留操作记录？</b>那就不是改几句话的事了，得另做一套带账号和服务端的版本。现在这个是「一台电脑、一两个人、每周导一次表」用的，别拿它当全公司的系统。</div>
+    </div>
+    <div class="modal-f"><span></span><button class="btn primary" data-close="aboutModal">知道了</button></div>
+  </div>
+</div>
+<script src="./assets/app.js?v=1.1.0"></script>
+<script>
+/* PWA：只在 http(s) 下注册；file:// 的单文件版不注册 */
+if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js?v=1.1.0').catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
