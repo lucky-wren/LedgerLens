@@ -6,10 +6,10 @@
 <title>账镜 LedgerLens · 多业态账目分析</title>
 <meta name="description" content="只吃收银系统导出的文件，把账目算清楚、画成图、说成人话。所有计算都在浏览器里完成。">
 <meta name="theme-color" content="#1d4ed8">
-<meta name="build-version" content="1.1.0">
+<meta name="build-version" content="1.2.1">
 <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./assets/app.css?v=1.1.0">
+<link rel="stylesheet" href="./assets/app.css?v=1.2.1">
 </head>
 <body>
 
@@ -24,8 +24,8 @@
     <button class="btn sm" id="btnGlossary">这些词啥意思</button>
     <button class="btn sm" id="btnFeatures">它能帮我做什么</button>
     <button class="btn sm" id="btnPrint">打印</button>
-    <button class="btn sm" id="btnExportCsv">导出表格</button>
-    <button class="btn sm primary" id="btnReport">导出这份结论</button>
+    <button class="btn sm" id="btnExportCsv">导出表格 ▾</button>
+    <button class="btn sm primary" id="btnReport">导出这份结论 ▾</button>
   </div>
 </div>
 
@@ -340,9 +340,9 @@
         <div class="feat"><h4>⑤ 不只给数字，还告诉你下一步做啥</h4>
           <p>每条建议都写明<b>「为什么这么说」和「可以怎么做」</b>，全是能直接安排的动作，不是专业术语堆砌。办完了点「✓ 处理过了」，它会记下当时的数字；过几天在「已处理」里回看，能直接比「标记时 → 现在」有没有变。觉得提醒太碎，点建议区右上角的「⚙ 判定标准」把线调松一点就行。</p></div>
         <div class="feat"><h4>⑥ 结论能带走，数据不带走</h4>
-          <p>一键导出<b>带封面的账目结论单</b>：门店、统计区间、对比区间、制表人、一句话结论、4 个大数字、已处理过的事都在第一页，在左栏第 2 步最下面填个制表人名字就能直接交出去，离线能看、能打印。逐笔账也能在这一页直接<b>搜单号或商品名</b>，或导出表格自己再算。所有计算都在这台电脑里完成，<b>账目不会上传到任何地方</b>，看完还能一键清空。</p></div>
+          <p>一键导出<b>带封面的账目结论单</b>：门店、统计区间、对比区间、制表人、一句话结论、4 个大数字、已处理过的事都在第一页，在左栏第 2 步最下面填个制表人名字就能直接交出去。<b>网页 / Word / Markdown / PDF 四种格式随你挑</b>，离线能看、能打印。逐笔账也能直接<b>搜单号或商品名</b>，或导出<b>排好版、带合计的 Excel 表格</b>自己再算。所有计算都在这台电脑里完成，<b>账目不会上传到任何地方</b>，看完还能一键清空。</p></div>
       </div>
-      <div class="notice"><b>最常用的一条路：</b>从收银后台导出日结表 → 拖进左侧 → 确认栏目（尤其看「进价」有没有对上）→ 看最上面那段结论和下面的建议 → 导出报告发给店长。换一家系统，只要重新认一次栏目名。<br><b>这版新增：</b>点柱子只看一项、逐笔搜单号、给建议标记「处理过了」、报告带封面、判定标准自己调。</div>
+      <div class="notice"><b>最常用的一条路：</b>从收银后台导出日结表 → 拖进左侧 → 确认栏目（尤其看「进价」有没有对上）→ 看最上面那段结论和下面的建议 → 导出报告发给店长。换一家系统，只要重新认一次栏目名。<br><b>这版新增：</b>点柱子只看一项、逐笔搜单号、给建议标记「处理过了」、报告带封面、判定标准自己调，以及导出中心里 4 种报告格式和好看的 Excel 明细表。</div>
 
     </div>
     <div class="modal-f"><button class="btn" id="btnAboutFromFeat">哪些事它还做不了</button><button class="btn primary" data-close="featuresModal">知道了</button></div>
@@ -406,7 +406,7 @@
       <p><b>一句话说清它是干什么的：</b>不进你的收银系统，只「吃它导出来的表」。把超市、药店、酒店后台导出的日结流水或对账单放进来，它帮你算清楚收了多少、赚了多少、哪里要留意、下一步做啥。<b>不需要厂商配合，也不需要网络。</b></p>
       <div class="notice"><b>它算的是「赚的差价」，不是最后落到口袋的钱。</b>卖价减进价就是差价，房租、人工、水电、平台抽成、税这些还没扣。要看净利，得另外有这些费用数据。</div>
       <ul>
-        <li><b>现在能做：</b>读 Excel（.xlsx）、CSV、TXT、JSON 和从 Excel 粘贴；栏目名不一样也能认；重复导入自动跳过；可选金额符号；算营收、退款、差价、客人平均消费；画 8 张图（<b>点柱子能只看一项</b>）；逐笔搜单号；给大白话建议（<b>能标记已处理并回看数字</b>）；自己调判定标准；导出带封面的报告和明细。</li>
+        <li><b>现在能做：</b>读 Excel（.xlsx）、CSV、TXT、JSON 和从 Excel 粘贴；栏目名不一样也能认；重复导入自动跳过；可选金额符号；算营收、退款、差价、客人平均消费；画 8 张图（<b>点柱子能只看一项</b>）；逐笔搜单号；给大白话建议（<b>能标记已处理并回看数字</b>）；自己调判定标准；导出带封面的报告（网页 / Word / Markdown / PDF）和好看的 Excel 明细表。</li>
         <li><b>现在做不了：</b>老版 .xls、加了密码的 Excel、小票拍照识别、直接连数据库、厂商接口对接、实时到账、多人账号与权限、自动定时拉取、把建议派给某个人的任务系统。这些都是以后才考虑的事，不影响现在算账。判定标准只存在这台电脑，换一台要重新设。</li>
         <li><b>几个容易弄错的地方：</b>表里没写进价就算不出赚的差价（会显示「—」，不会瞎填 0）；金额符号只是改显示，<b>不会帮你换汇率</b>；一份表里混了几种货币，要先自己折成同一种；每品类各占一列的「宽表」要先整理成一行一笔才能放进来。</li>
         <li><b>数据在哪：</b>全部在你这台电脑的浏览器里算，不会上传。导入的账目和栏目对照记在本机，刷新还在，点左栏「清空我的账目」即可清掉。</li>
@@ -416,12 +416,69 @@
     <div class="modal-f"><span></span><button class="btn primary" data-close="aboutModal">知道了</button></div>
   </div>
 </div>
-<script src="./assets/app.js?v=1.1.0"></script>
+
+<!-- ===== 导出中心：挑格式 ===== -->
+<div class="mask" id="exportModal">
+  <div class="modal export-modal">
+    <div class="modal-h">
+      <div><h3>导出 · 挑一个你顺手的格式</h3><p>全部在你自己的电脑里生成，账目不会上传</p></div>
+      <button class="btn ghost sm" data-close="exportModal">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="export-group" id="expGroupTable">
+        <div class="eg-h"><span class="eg-no">一</span><div>
+          <h4>每一笔账的表格</h4><p>按现在的筛选条件，共 <b id="expCount">—</b> 笔</p>
+        </div></div>
+        <div class="fmt-grid">
+          <button class="fmt-card rec" id="fmtXlsx">
+            <span class="fmt-ico">▦</span><b>好看的 Excel（.xlsx）</b>
+            <small>推荐 · 列宽排好、首行冻结、表头蓝底白字、金额千分位、退款标红、末尾合计，还附一页「这些列什么意思」</small>
+            <span class="fmt-tag">最好看</span>
+          </button>
+          <button class="fmt-card" id="fmtCsv">
+            <span class="fmt-ico">≡</span><b>纯文本表格（.csv）</b>
+            <small>给别的系统或脚本读；没有颜色和对齐，用 Excel / WPS 打开会比较朴素</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="export-group" id="expGroupReport">
+        <div class="eg-h"><span class="eg-no">二</span><div>
+          <h4>账目结论单（带封面的那份）</h4><p>一句话结论、4 个大数字、8 张图、能做的事、已经处理过的事</p>
+        </div></div>
+        <div class="fmt-grid four">
+          <button class="fmt-card rec" id="fmtHtml">
+            <span class="fmt-ico">🌐</span><b>网页（.html）</b>
+            <small>推荐 · 一个文件装下全部内容，双击就能看，离线也能打印</small>
+            <span class="fmt-tag">最完整</span>
+          </button>
+          <button class="fmt-card" id="fmtDocx">
+            <span class="fmt-ico">📄</span><b>Word（.docx）</b>
+            <small>图表和建议都嵌进去，方便接着改文字、盖个章、发给同事</small>
+          </button>
+          <button class="fmt-card" id="fmtPdf">
+            <span class="fmt-ico">🧾</span><b>PDF（打印另存）</b>
+            <small>打开打印窗口，目标选「另存为 PDF」。中文和图表最保真</small>
+          </button>
+          <button class="fmt-card" id="fmtMd">
+            <span class="fmt-ico">✎</span><b>Markdown（.md）</b>
+            <small>纯文字，方便贴进笔记、文档系统或代码仓库；图用一句话速览代替</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="notice"><b>关于 PDF：</b>这里不直接下载一个 .pdf 文件，而是打开你电脑自己的打印窗口，选「另存为 PDF」即可。这样中文不会乱码、8 张图都是彩色的，也不用装任何东西。全部过程仍在本机完成。</div>
+    </div>
+    <div class="modal-f"><span>所有文件都在本机生成 · 数据不上传</span><button class="btn primary sm" data-close="exportModal">关闭</button></div>
+  </div>
+</div>
+
+<script src="./assets/app.js?v=1.2.1"></script>
 <script>
 /* PWA：只在 http(s) 下注册；file:// 的单文件版不注册 */
 if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js?v=1.1.0').catch(function () {});
+    navigator.serviceWorker.register('./sw.js?v=1.2.1').catch(function () {});
   });
 }
 </script>

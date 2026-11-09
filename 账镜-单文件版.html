@@ -6,7 +6,7 @@
 <title>账镜 LedgerLens · 多业态账目分析</title>
 <meta name="description" content="只吃收银系统导出的文件，把账目算清楚、画成图、说成人话。所有计算都在浏览器里完成。">
 <meta name="theme-color" content="#1d4ed8">
-<meta name="build-version" content="1.1.0-single">
+<meta name="build-version" content="1.2.1-single">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%231d4ed8%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2244%22%20text-anchor%3D%22middle%22%20font-size%3D%2234%22%20font-family%3D%22sans-serif%22%20font-weight%3D%22700%22%20fill%3D%22%23fff%22%3E%E8%B4%A6%3C%2Ftext%3E%3C%2Fsvg%3E">
 
 <style>
@@ -513,6 +513,40 @@ td b{color:var(--ink)}
   .chart-box.span2{grid-column:span 2!important}
 }
 
+
+/* ===== styles/05-export.css ===== */
+/* ===================== 导出中心 ===================== */
+.export-modal{width:min(880px,94vw);max-height:88vh}
+.export-modal .modal-b{background:#f7faff}
+.export-group{background:#fff;border:1px solid #dce6f5;border-radius:12px;padding:16px 18px;margin-bottom:16px;transition:.18s}
+.export-group.focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+.eg-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.eg-no{flex:none;width:30px;height:30px;border-radius:9px;background:#1d4ed8;color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800}
+.eg-h h4{margin:0;font-size:15px;color:var(--ink)}
+.eg-h p{margin:2px 0 0;font-size:12.5px;color:var(--ink2);font-weight:600}
+.eg-h p b{color:var(--brand);font-size:14px}
+.fmt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.fmt-grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fmt-card{
+  position:relative;text-align:left;border:1px solid #d6e2f3;background:#fcfdff;border-radius:10px;
+  padding:13px 14px 12px 46px;min-height:92px;cursor:pointer;transition:.16s;color:var(--ink);
+}
+.fmt-card:hover{border-color:var(--brand);background:#f0f6ff;transform:translateY(-2px);box-shadow:0 8px 18px rgba(22,35,58,.08)}
+.fmt-card.rec{border-color:#93b8f7;background:#f5f9ff}
+.fmt-card.rec:hover{background:#eaf2ff}
+.fmt-ico{position:absolute;left:13px;top:13px;width:24px;height:24px;border-radius:7px;background:#e8f0ff;color:#1d4ed8;
+  display:grid;place-items:center;font-size:15px;font-weight:800}
+.fmt-card b{display:block;font-size:14px;margin-bottom:5px;color:var(--ink)}
+.fmt-card small{display:block;font-size:12px;line-height:1.7;color:var(--ink2)}
+.fmt-tag{position:absolute;right:11px;top:11px;font-size:10px;font-weight:800;background:#1d4ed8;color:#fff;
+  padding:2px 7px;border-radius:20px}
+@media(max-width:760px){
+  .fmt-grid,.fmt-grid.four{grid-template-columns:1fr}
+  .fmt-card{min-height:0;padding-bottom:14px}
+  .export-modal{width:96vw}
+}
+@media print{ .export-modal{display:none!important} }
+
 </style>
 </head>
 <body>
@@ -528,8 +562,8 @@ td b{color:var(--ink)}
     <button class="btn sm" id="btnGlossary">这些词啥意思</button>
     <button class="btn sm" id="btnFeatures">它能帮我做什么</button>
     <button class="btn sm" id="btnPrint">打印</button>
-    <button class="btn sm" id="btnExportCsv">导出表格</button>
-    <button class="btn sm primary" id="btnReport">导出这份结论</button>
+    <button class="btn sm" id="btnExportCsv">导出表格 ▾</button>
+    <button class="btn sm primary" id="btnReport">导出这份结论 ▾</button>
   </div>
 </div>
 
@@ -844,9 +878,9 @@ td b{color:var(--ink)}
         <div class="feat"><h4>⑤ 不只给数字，还告诉你下一步做啥</h4>
           <p>每条建议都写明<b>「为什么这么说」和「可以怎么做」</b>，全是能直接安排的动作，不是专业术语堆砌。办完了点「✓ 处理过了」，它会记下当时的数字；过几天在「已处理」里回看，能直接比「标记时 → 现在」有没有变。觉得提醒太碎，点建议区右上角的「⚙ 判定标准」把线调松一点就行。</p></div>
         <div class="feat"><h4>⑥ 结论能带走，数据不带走</h4>
-          <p>一键导出<b>带封面的账目结论单</b>：门店、统计区间、对比区间、制表人、一句话结论、4 个大数字、已处理过的事都在第一页，在左栏第 2 步最下面填个制表人名字就能直接交出去，离线能看、能打印。逐笔账也能在这一页直接<b>搜单号或商品名</b>，或导出表格自己再算。所有计算都在这台电脑里完成，<b>账目不会上传到任何地方</b>，看完还能一键清空。</p></div>
+          <p>一键导出<b>带封面的账目结论单</b>：门店、统计区间、对比区间、制表人、一句话结论、4 个大数字、已处理过的事都在第一页，在左栏第 2 步最下面填个制表人名字就能直接交出去。<b>网页 / Word / Markdown / PDF 四种格式随你挑</b>，离线能看、能打印。逐笔账也能直接<b>搜单号或商品名</b>，或导出<b>排好版、带合计的 Excel 表格</b>自己再算。所有计算都在这台电脑里完成，<b>账目不会上传到任何地方</b>，看完还能一键清空。</p></div>
       </div>
-      <div class="notice"><b>最常用的一条路：</b>从收银后台导出日结表 → 拖进左侧 → 确认栏目（尤其看「进价」有没有对上）→ 看最上面那段结论和下面的建议 → 导出报告发给店长。换一家系统，只要重新认一次栏目名。<br><b>这版新增：</b>点柱子只看一项、逐笔搜单号、给建议标记「处理过了」、报告带封面、判定标准自己调。</div>
+      <div class="notice"><b>最常用的一条路：</b>从收银后台导出日结表 → 拖进左侧 → 确认栏目（尤其看「进价」有没有对上）→ 看最上面那段结论和下面的建议 → 导出报告发给店长。换一家系统，只要重新认一次栏目名。<br><b>这版新增：</b>点柱子只看一项、逐笔搜单号、给建议标记「处理过了」、报告带封面、判定标准自己调，以及导出中心里 4 种报告格式和好看的 Excel 明细表。</div>
 
     </div>
     <div class="modal-f"><button class="btn" id="btnAboutFromFeat">哪些事它还做不了</button><button class="btn primary" data-close="featuresModal">知道了</button></div>
@@ -910,7 +944,7 @@ td b{color:var(--ink)}
       <p><b>一句话说清它是干什么的：</b>不进你的收银系统，只「吃它导出来的表」。把超市、药店、酒店后台导出的日结流水或对账单放进来，它帮你算清楚收了多少、赚了多少、哪里要留意、下一步做啥。<b>不需要厂商配合，也不需要网络。</b></p>
       <div class="notice"><b>它算的是「赚的差价」，不是最后落到口袋的钱。</b>卖价减进价就是差价，房租、人工、水电、平台抽成、税这些还没扣。要看净利，得另外有这些费用数据。</div>
       <ul>
-        <li><b>现在能做：</b>读 Excel（.xlsx）、CSV、TXT、JSON 和从 Excel 粘贴；栏目名不一样也能认；重复导入自动跳过；可选金额符号；算营收、退款、差价、客人平均消费；画 8 张图（<b>点柱子能只看一项</b>）；逐笔搜单号；给大白话建议（<b>能标记已处理并回看数字</b>）；自己调判定标准；导出带封面的报告和明细。</li>
+        <li><b>现在能做：</b>读 Excel（.xlsx）、CSV、TXT、JSON 和从 Excel 粘贴；栏目名不一样也能认；重复导入自动跳过；可选金额符号；算营收、退款、差价、客人平均消费；画 8 张图（<b>点柱子能只看一项</b>）；逐笔搜单号；给大白话建议（<b>能标记已处理并回看数字</b>）；自己调判定标准；导出带封面的报告（网页 / Word / Markdown / PDF）和好看的 Excel 明细表。</li>
         <li><b>现在做不了：</b>老版 .xls、加了密码的 Excel、小票拍照识别、直接连数据库、厂商接口对接、实时到账、多人账号与权限、自动定时拉取、把建议派给某个人的任务系统。这些都是以后才考虑的事，不影响现在算账。判定标准只存在这台电脑，换一台要重新设。</li>
         <li><b>几个容易弄错的地方：</b>表里没写进价就算不出赚的差价（会显示「—」，不会瞎填 0）；金额符号只是改显示，<b>不会帮你换汇率</b>；一份表里混了几种货币，要先自己折成同一种；每品类各占一列的「宽表」要先整理成一行一笔才能放进来。</li>
         <li><b>数据在哪：</b>全部在你这台电脑的浏览器里算，不会上传。导入的账目和栏目对照记在本机，刷新还在，点左栏「清空我的账目」即可清掉。</li>
@@ -920,13 +954,70 @@ td b{color:var(--ink)}
     <div class="modal-f"><span></span><button class="btn primary" data-close="aboutModal">知道了</button></div>
   </div>
 </div>
+
+<!-- ===== 导出中心：挑格式 ===== -->
+<div class="mask" id="exportModal">
+  <div class="modal export-modal">
+    <div class="modal-h">
+      <div><h3>导出 · 挑一个你顺手的格式</h3><p>全部在你自己的电脑里生成，账目不会上传</p></div>
+      <button class="btn ghost sm" data-close="exportModal">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="export-group" id="expGroupTable">
+        <div class="eg-h"><span class="eg-no">一</span><div>
+          <h4>每一笔账的表格</h4><p>按现在的筛选条件，共 <b id="expCount">—</b> 笔</p>
+        </div></div>
+        <div class="fmt-grid">
+          <button class="fmt-card rec" id="fmtXlsx">
+            <span class="fmt-ico">▦</span><b>好看的 Excel（.xlsx）</b>
+            <small>推荐 · 列宽排好、首行冻结、表头蓝底白字、金额千分位、退款标红、末尾合计，还附一页「这些列什么意思」</small>
+            <span class="fmt-tag">最好看</span>
+          </button>
+          <button class="fmt-card" id="fmtCsv">
+            <span class="fmt-ico">≡</span><b>纯文本表格（.csv）</b>
+            <small>给别的系统或脚本读；没有颜色和对齐，用 Excel / WPS 打开会比较朴素</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="export-group" id="expGroupReport">
+        <div class="eg-h"><span class="eg-no">二</span><div>
+          <h4>账目结论单（带封面的那份）</h4><p>一句话结论、4 个大数字、8 张图、能做的事、已经处理过的事</p>
+        </div></div>
+        <div class="fmt-grid four">
+          <button class="fmt-card rec" id="fmtHtml">
+            <span class="fmt-ico">🌐</span><b>网页（.html）</b>
+            <small>推荐 · 一个文件装下全部内容，双击就能看，离线也能打印</small>
+            <span class="fmt-tag">最完整</span>
+          </button>
+          <button class="fmt-card" id="fmtDocx">
+            <span class="fmt-ico">📄</span><b>Word（.docx）</b>
+            <small>图表和建议都嵌进去，方便接着改文字、盖个章、发给同事</small>
+          </button>
+          <button class="fmt-card" id="fmtPdf">
+            <span class="fmt-ico">🧾</span><b>PDF（打印另存）</b>
+            <small>打开打印窗口，目标选「另存为 PDF」。中文和图表最保真</small>
+          </button>
+          <button class="fmt-card" id="fmtMd">
+            <span class="fmt-ico">✎</span><b>Markdown（.md）</b>
+            <small>纯文字，方便贴进笔记、文档系统或代码仓库；图用一句话速览代替</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="notice"><b>关于 PDF：</b>这里不直接下载一个 .pdf 文件，而是打开你电脑自己的打印窗口，选「另存为 PDF」即可。这样中文不会乱码、8 张图都是彩色的，也不用装任何东西。全部过程仍在本机完成。</div>
+    </div>
+    <div class="modal-f"><span>所有文件都在本机生成 · 数据不上传</span><button class="btn primary sm" data-close="exportModal">关闭</button></div>
+  </div>
+</div>
+
 <script>
 (function(){
 'use strict';
 globalThis.__LEDGERLENS__ = {
   "name": "账镜 LedgerLens",
-  "version": "1.1.0",
-  "buildTime": "2026-11-09T12:31:17.602Z",
+  "version": "1.2.1",
+  "buildTime": "2026-11-09T14:20:28.575Z",
   "defaultCurrency": "¥",
   "lang": "zh-CN",
   "mode": "static",
@@ -1358,14 +1449,27 @@ LL.zipStore = function(entries){
   const parts=[], central=[]; let offset=0;
   const u16=(a,v)=>{a.push(v&255,(v>>>8)&255)};
   const u32=(a,v)=>{a.push(v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255)};
+  /* bit 11 = 文件名是 UTF-8。包里有中文文件名（账镜-单文件版.html 等），
+     不设这个标志在部分 Windows 解压工具里会乱码。 */
+  const UTF8_FLAG=0x0800;
+  /* DOS 日期时间：不写就是 1980-00-00，解压软件里看着像坏包 */
+  const now=new Date();
+  const dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xFFFF;
+  const dosDate=(((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xFFFF;
   entries.forEach(e=>{
-    const name=enc.encode(e.name), data=e.data||dec, crc=LL.crc32(data);
-    const local=[]; u32(local,0x04034b50); u16(local,20); u16(local,0); u16(local,0); u16(local,0); u16(local,0);
-    u32(local,crc); u32(local,data.length); u32(local,data.length); u16(local,name.length); u16(local,0);
+    const name=enc.encode(e.name), data=e.data||dec, method=e.method||0;
+    /* method=8 时传进来的 data 已经是压缩后的字节：
+       CRC 必须按【原始未压缩数据】算，uncompressed size 也必须写原始长度，
+       否则第三方解压工具（Python zipfile / Windows / WPS）会报 Bad CRC-32。
+       项目自己的 LL.unzip 不校验这两项，所以这个错误以前没被发现。 */
+    const rawCrc = e.crc != null ? e.crc : LL.crc32(data);
+    const rawSize = e.size != null ? e.size : data.length;
+    const local=[]; u32(local,0x04034b50); u16(local,20); u16(local,UTF8_FLAG); u16(local,method); u16(local,dosTime); u16(local,dosDate);
+    u32(local,rawCrc); u32(local,data.length); u32(local,rawSize); u16(local,name.length); u16(local,0);
     const lh=new Uint8Array(local.length+name.length); lh.set(local); lh.set(name,local.length);
     parts.push(lh,data);
-    const cd=[]; u32(cd,0x02014b50); u16(cd,20); u16(cd,20); u16(cd,0); u16(cd,0); u16(cd,0); u16(cd,0);
-    u32(cd,crc); u32(cd,data.length); u32(cd,data.length); u16(cd,name.length); u16(cd,0); u16(cd,0);
+    const cd=[]; u32(cd,0x02014b50); u16(cd,20); u16(cd,20); u16(cd,UTF8_FLAG); u16(cd,method); u16(cd,dosTime); u16(cd,dosDate);
+    u32(cd,rawCrc); u32(cd,data.length); u32(cd,rawSize); u16(cd,name.length); u16(cd,0); u16(cd,0);
     u16(cd,0); u16(cd,0); u32(cd,0); u32(cd,offset);
     const ce=new Uint8Array(cd.length+name.length); ce.set(cd); ce.set(name,cd.length);
     central.push(ce); offset+=lh.length+data.length;
@@ -1377,6 +1481,28 @@ LL.zipStore = function(entries){
   const total=all.reduce((s,x)=>s+x.length,0), out=new Uint8Array(total);
   let q=0; all.forEach(x=>{out.set(x,q);q+=x.length});
   return out;
+};
+/* 异步版：浏览器 / Node 有 CompressionStream('deflate-raw') 时逐个 entry 压缩，
+   压缩后反而变大或环境不支持就自动退回 stored。ZIP 结构与 zipStore 完全一致，
+   读出侧仍走 LL.unzip / LL.inflateRaw。 */
+LL.zipStoreAsync = async function(entries){
+  const canCompress = typeof CompressionStream !== 'undefined' && typeof Response !== 'undefined';
+  const prepared = [];
+  for (const e of entries){
+    const raw = e.data || new Uint8Array(0);
+    let data = raw, method = 0;
+    if (canCompress && raw.length > 1024){
+      try{
+        const cs = new CompressionStream('deflate-raw');
+        const stream = new Blob([raw]).stream().pipeThrough(cs);
+        const buf = await new Response(stream).arrayBuffer();
+        const out = new Uint8Array(buf);
+        if (out.length < raw.length){ data = out; method = 8; }
+      }catch(err){ /* 退回 stored */ }
+    }
+    prepared.push({ name:e.name, data, method, crc:LL.crc32(raw), size:raw.length });
+  }
+  return LL.zipStore(prepared);
 };
 
 /* 轻量 XML：只解析元素 / 属性 / 文本，够 xlsx 用，不依赖 DOMParser */
@@ -1988,6 +2114,654 @@ LL.standardSampleCSV = function(){
   return [head.join(',')].concat(rows.map(r=>[r.date,r.time,r.orderNo,r.amount.toFixed(2),r.cost!=null?r.cost.toFixed(2):'',r.direction,r.payMethod,r.category,r.item,r.qty,r.store,LL.BIZ[r.biz]?LL.BIZ[r.biz].name:r.biz].map(q).join(','))).join('\n');
 };
 
+
+/* ===== core/export-xlsx.js ===== */
+
+/* 内部辅助函数用 IIFE 隔离，避免拼接后与别的模块同名 */
+(function(){
+const LL = globalThis.LL;
+
+/* =====================================================================
+   带样式的 .xlsx 导出（纯浏览器 / 纯 Node，零依赖）
+   解决「导出的 CSV 用 WPS 打开列宽挤压、文字被截断、没有表头样式」：
+     · 每列按内容给宽度         · 首行深蓝底白字、加粗、冻结、自动筛选
+     · 金额 / 进价 / 差价 / 数量右对齐 + 千分位     · 退款行金额标红
+     · 奇偶行浅蓝斑马纹 + 细边框 · 末尾合计行        · 第二张表写清每列口径
+   只用 stored ZIP，复用 LL.zipStore；不引任何第三方库。
+   ===================================================================== */
+
+const X = s => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&apos;')
+  .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+
+const colName = n => { let s = ''; n++; while (n > 0) { n--; s = String.fromCharCode(65 + n % 26) + s; n = Math.floor(n / 26); } return s; };
+
+/* ---------- 样式表：索引即 s 值，改动时务必同步 STYLE 常量 ---------- */
+const STYLE = {
+  head: 1, text: 2, money: 3, int: 4,
+  zebraText: 5, zebraMoney: 6, zebraInt: 7,
+  totalText: 8, totalMoney: 9, totalInt: 10,
+  refundMoney: 11, zebraRefundMoney: 12,
+  noteHead: 13, noteText: 14, noteZebra: 15
+};
+
+function stylesXml() {
+  const font = (body) => '<font>' + body + '</font>';
+  const fonts = [
+    font('<sz val="11"/><color rgb="FF1B2B45"/><name val="Microsoft YaHei"/><charset val="134"/>'),
+    font('<b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Microsoft YaHei"/><charset val="134"/>'),
+    font('<b/><sz val="11"/><color rgb="FF173A86"/><name val="Microsoft YaHei"/><charset val="134"/>'),
+    font('<sz val="11"/><color rgb="FFC92A2A"/><name val="Microsoft YaHei"/><charset val="134"/>')
+  ];
+  const solid = rgb => '<fill><patternFill patternType="solid"><fgColor rgb="' + rgb + '"/><bgColor indexed="64"/></patternFill></fill>';
+  const fills = ['<fill><patternFill patternType="none"/></fill>',
+    '<fill><patternFill patternType="gray125"/></fill>',
+    solid('FF1D4ED8'), solid('FFF2F6FD'), solid('FFE8EEFA'), solid('FFEAF2FF')];
+  const borders = ['<border><left/><right/><top/><bottom/><diagonal/></border>',
+    '<border><left style="thin"><color rgb="FFD9E2EF"/></left><right style="thin"><color rgb="FFD9E2EF"/></right>' +
+    '<top style="thin"><color rgb="FFD9E2EF"/></top><bottom style="thin"><color rgb="FFD9E2EF"/></bottom><diagonal/></border>'];
+  // numFmtId 4 = #,##0.00 ，3 = #,##0 ；都是内置格式，不需要自定义 numFmts
+  const xf = (o) => '<xf numFmtId="' + (o.n || 0) + '" fontId="' + (o.f || 0) + '" fillId="' + (o.g || 0) +
+    '" borderId="' + (o.b === undefined ? 1 : o.b) + '" xfId="0" applyFont="1" applyFill="1" applyBorder="1"' +
+    (o.n ? ' applyNumberFormat="1"' : '') + ' applyAlignment="1">' +
+    '<alignment horizontal="' + (o.a || 'left') + '" vertical="center"' + (o.w ? ' wrapText="1"' : '') + '/></xf>';
+  const xfs = [
+    xf({ b: 0 }),                                        // 0 默认
+    xf({ f: 1, g: 2, a: 'center' }),                     // 1 表头
+    xf({}),                                              // 2 文本
+    xf({ n: 4, a: 'right' }),                            // 3 金额
+    xf({ n: 3, a: 'right' }),                            // 4 整数
+    xf({ g: 3 }),                                        // 5 斑马文本
+    xf({ g: 3, n: 4, a: 'right' }),                      // 6 斑马金额
+    xf({ g: 3, n: 3, a: 'right' }),                      // 7 斑马整数
+    xf({ f: 2, g: 4 }),                                  // 8 合计文本
+    xf({ f: 2, g: 4, n: 4, a: 'right' }),                // 9 合计金额
+    xf({ f: 2, g: 4, n: 3, a: 'right' }),                // 10 合计整数
+    xf({ f: 3, n: 4, a: 'right' }),                      // 11 退款金额（红）
+    xf({ f: 3, g: 3, n: 4, a: 'right' }),                // 12 斑马退款金额
+    xf({ f: 1, g: 2, a: 'center' }),                     // 13 说明表头
+    xf({ b: 1, w: 1 }),                                  // 14 说明正文
+    xf({ g: 3, b: 1, w: 1 })                             // 15 说明斑马
+  ];
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<fonts count="' + fonts.length + '">' + fonts.join('') + '</fonts>' +
+    '<fills count="' + fills.length + '">' + fills.join('') + '</fills>' +
+    '<borders count="' + borders.length + '">' + borders.join('') + '</borders>' +
+    '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+    '<cellXfs count="' + xfs.length + '">' + xfs.join('') + '</cellXfs>' +
+    '<cellStyles count="1"><cellStyle name="常规" xfId="0" builtinId="0"/></cellStyles>' +
+    '</styleSheet>';
+}
+
+const inlineCell = (ref, v, s) => '<c r="' + ref + '" s="' + s + '" t="inlineStr"><is><t xml:space="preserve">' + X(v) + '</t></is></c>';
+const numCell = (ref, v, s) => '<c r="' + ref + '" s="' + s + '"><v>' + (Number(v) || 0) + '</v></c>';
+
+function sheet1Xml(m) {
+  const head = m.head, rows = m.data, widths = m.widths;
+  const moneyCols = m.moneyCols || [], intCols = m.intCols || [];
+  const last = rows.length + 1;                       // 最后一条数据的行号
+  const cols = '<cols>' + widths.map((w, i) =>
+    '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols>';
+
+  const headerRow = '<row r="1" ht="30" customHeight="1">' +
+    head.map((h, i) => inlineCell(colName(i) + '1', h, STYLE.head)).join('') + '</row>';
+
+  const body = rows.map((row, ri) => {
+    const r = ri + 2, zebra = ri % 2 === 1, refund = !!m.refundFlags[ri];
+    return '<row r="' + r + '" ht="21" customHeight="1">' + row.map((v, ci) => {
+      const ref = colName(ci) + r;
+      const isMoney = moneyCols.indexOf(ci) >= 0, isInt = intCols.indexOf(ci) >= 0;
+      if ((isMoney || isInt) && v !== '' && v != null && isFinite(Number(v))) {
+        let s = isMoney ? (zebra ? STYLE.zebraMoney : STYLE.money) : (zebra ? STYLE.zebraInt : STYLE.int);
+        if (isMoney && refund) s = zebra ? STYLE.zebraRefundMoney : STYLE.refundMoney;
+        return numCell(ref, v, s);
+      }
+      return inlineCell(ref, v == null ? '' : v, zebra ? STYLE.zebraText : STYLE.text);
+    }).join('') + '</row>';
+  }).join('');
+
+  // 合计行：只对数值列求和，文字列留空；第一列写「合计」
+  const totalCells = head.map((_, ci) => {
+    const ref = colName(ci) + (last + 1);
+    if (ci === 0) return inlineCell(ref, '合计（' + rows.length.toLocaleString('zh-CN') + ' 笔）', STYLE.totalText);
+    if (moneyCols.indexOf(ci) < 0 && intCols.indexOf(ci) < 0) return inlineCell(ref, '', STYLE.totalText);
+    let sum = 0;
+    rows.forEach(r => { const n = Number(r[ci]); if (isFinite(n)) sum += n; });
+    return numCell(ref, LL.round(sum, 2), moneyCols.indexOf(ci) >= 0 ? STYLE.totalMoney : STYLE.totalInt);
+  }).join('');
+  const totalRow = '<row r="' + (last + 1) + '" ht="26" customHeight="1">' + totalCells + '</row>';
+
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>' +
+    '<dimension ref="A1:' + colName(head.length - 1) + (last + 1) + '"/>' +
+    '<sheetViews><sheetView workbookViewId="0" tabSelected="1">' +
+    '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>' +
+    '<selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews>' +
+    '<sheetFormatPr defaultRowHeight="18"/>' + cols +
+    '<sheetData>' + headerRow + body + totalRow + '</sheetData>' +
+    '<autoFilter ref="A1:' + colName(head.length - 1) + last + '"/>' +
+    '<pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.2" footer="0.2"/>' +
+    '<pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/>' +
+    '</worksheet>';
+}
+
+function sheet2Xml(m) {
+  const lines = [];
+  lines.push(['【这次导出】', '']);
+  (m.meta || []).forEach(x => lines.push([x[0], x[1]]));
+  lines.push(['', '']);
+  lines.push(['【每一列是什么意思】', '']);
+  lines.push(['列名', '说明']);
+  (m.notes || []).forEach(x => lines.push([x[0], x[1]]));
+  lines.push(['', '']);
+  lines.push(['【口径提醒】', '「赚的差价」只算记了进价的那部分账：卖价减进价，退款时把当时的成本加回来。' +
+    '没记进价的不会被当成不要钱。差价还没扣房租、人工、水电、平台抽成，不等于最后落到口袋的钱。']);
+  lines.push(['【隐私】', '这份表是在你自己的电脑里生成的，账目没有上传。']);
+
+  const body = lines.map((row, ri) => {
+    const r = ri + 1, zebra = ri % 2 === 1;
+    const isHead = row[0] === '列名' || /^【/.test(row[0]);
+    return '<row r="' + r + '" ht="' + (isHead ? 26 : 22) + '" customHeight="1">' +
+      inlineCell('A' + r, row[0], isHead ? STYLE.noteHead : (zebra ? STYLE.noteZebra : STYLE.noteText)) +
+      inlineCell('B' + r, row[1], isHead ? STYLE.noteHead : (zebra ? STYLE.noteZebra : STYLE.noteText)) +
+      '</row>';
+  }).join('');
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+    '<sheetFormatPr defaultRowHeight="18"/>' +
+    '<cols><col min="1" max="1" width="22" customWidth="1"/><col min="2" max="2" width="96" customWidth="1"/></cols>' +
+    '<sheetData>' + body + '</sheetData>' +
+    '<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.2" footer="0.2"/>' +
+    '<pageSetup paperSize="9" fitToWidth="1" fitToHeight="0"/>' +
+    '</worksheet>';
+}
+
+/**
+ * @param {Object} m
+ *   head        表头（白话列名）
+ *   data        行数组，数值列请给 number 或数字字符串，其余给字符串
+ *   widths      每列宽度
+ *   moneyCols   需要 #,##0.00 的列下标
+ *   intCols     需要 #,##0 的列下标
+ *   refundFlags 每行是否退款（金额标红）
+ *   notes       [[列名, 白话解释], ...]
+ *   meta        [[项目, 值], ...] 写在第二张表顶部
+ */
+function styledEntries(m) {
+  const enc = new TextEncoder();
+  const sheet1 = sheet1Xml(m), sheet2 = sheet2Xml(m);
+  const wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+    '<sheets><sheet name="账目明细" sheetId="1" r:id="rId1"/><sheet name="这些列什么意思" sheetId="2" r:id="rId2"/></sheets></workbook>';
+  const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>' +
+    '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+    '</Relationships>';
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+    '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+    '<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+  const entries = [
+    ['[Content_Types].xml', ct], ['_rels/.rels', rootRels],
+    ['xl/workbook.xml', wb], ['xl/_rels/workbook.xml.rels', rels],
+    ['xl/styles.xml', stylesXml()],
+    ['xl/worksheets/sheet1.xml', sheet1], ['xl/worksheets/sheet2.xml', sheet2]
+  ];
+  return entries.map(e => ({ name: e[0], data: enc.encode(e[1]) }));
+}
+
+/** 同步版（stored ZIP）：用于不支持压缩的环境与单元测试 */
+LL.buildStyledXLSX = function (m) {
+  return LL.zipStore(styledEntries(m));
+};
+/** 异步版（deflate 压缩）：大数据量时体积可降到十分之一，UI 用这个 */
+LL.buildStyledXLSXAsync = function (m) {
+  return LL.zipStoreAsync(styledEntries(m));
+};
+})();
+
+
+/* ===== core/export-docx.js ===== */
+
+/* 内部辅助函数用 IIFE 隔离，避免拼接后与别的模块同名 */
+(function(){
+const LL = globalThis.LL;
+
+/* =====================================================================
+   最小 Word (.docx) 生成器：零依赖、纯浏览器 / 纯 Node。
+   只写够用的 OOXML：标题、段落、简单表格、内嵌 PNG 图片、A4 页面。
+   不写页眉页脚 / 域 / 修订，避免引入复杂关系与校验风险。
+   ===================================================================== */
+
+const X = s => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&apos;')
+  .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+
+const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+function b64ToBytes(s) {
+  const t = String(s).replace(/[^A-Za-z0-9+/]/g, '');
+  const out = [];
+  for (let i = 0; i < t.length; i += 4) {
+    const a = B64.indexOf(t[i]), b = B64.indexOf(t[i + 1]);
+    const c = B64.indexOf(t[i + 2]), d = B64.indexOf(t[i + 3]);
+    if (a < 0 || b < 0) break;
+    const n = (a << 18) | (b << 12) | ((c < 0 ? 0 : c) << 6) | (d < 0 ? 0 : d);
+    out.push((n >>> 16) & 255);
+    if (c >= 0) out.push((n >>> 8) & 255);
+    if (d >= 0) out.push(n & 255);
+  }
+  return new Uint8Array(out);
+}
+
+function pngSize(bytes) {
+  try {
+    if (bytes.length > 24 && bytes[0] === 0x89 && bytes[1] === 0x50) {
+      const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      const w = dv.getUint32(16, false), h = dv.getUint32(20, false);
+      if (w > 0 && h > 0) return { w, h };
+    }
+  } catch (e) { /* 用默认比例 */ }
+  return { w: 800, h: 300 };
+}
+
+/* ---------- 段落 / 表格 / 图片 ---------- */
+function run(text, o) {
+  o = o || {};
+  const rPr = '<w:rPr>' +
+    (o.b ? '<w:b/>' : '') +
+    (o.color ? '<w:color w:val="' + o.color + '"/>' : '') +
+    '<w:sz w:val="' + (o.size || 22) + '"/><w:szCs w:val="' + (o.size || 22) + '"/>' +
+    '<w:rFonts w:ascii="Microsoft YaHei" w:hAnsi="Microsoft YaHei" w:eastAsia="Microsoft YaHei"/>' +
+    '</w:rPr>';
+  return '<w:r>' + rPr + '<w:t xml:space="preserve">' + X(text) + '</w:t></w:r>';
+}
+
+function para(text, o) {
+  o = o || {};
+  const pPr = '<w:pPr>' +
+    (o.align ? '<w:jc w:val="' + o.align + '"/>' : '') +
+    '<w:spacing w:before="' + (o.before === undefined ? 80 : o.before) + '" w:after="' + (o.after === undefined ? 80 : o.after) + '" w:line="300" w:lineRule="auto"/>' +
+    (o.fill ? '<w:shd w:val="clear" w:color="auto" w:fill="' + o.fill + '"/>' : '') +
+    (o.border ? '<w:pBdr><w:left w:val="single" w:sz="18" w:space="6" w:color="' + o.border + '"/></w:pBdr>' : '') +
+    (o.indent ? '<w:ind w:left="' + o.indent + '"/>' : '') +
+    '</w:pPr>';
+  return '<w:p>' + pPr + (text === '' ? '' : run(text, o)) + '</w:p>';
+}
+
+function table(rows, widths, o) {
+  o = o || {};
+  const total = widths.reduce((a, b) => a + b, 0);
+  const borders = '<w:tblBorders>' +
+    ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k =>
+      '<w:' + k + ' w:val="single" w:sz="4" w:space="0" w:color="D9E2EF"/>').join('') + '</w:tblBorders>';
+  const head = rows.length ? rows[0] : [];
+  const body = rows.map((row, ri) =>
+    '<w:tr>' + row.map((cell, ci) =>
+      '<w:tc><w:tcPr><w:tcW w:w="' + (widths[ci] || 3000) + '" w:type="dxa"/>' +
+      (ri === 0 || o.shadeAll ? '<w:shd w:val="clear" w:color="auto" w:fill="' + (ri === 0 ? '1D4ED8' : 'F2F6FD') + '"/>' : '') +
+      '<w:vAlign w:val="center"/></w:tcPr>' +
+      para(String(cell), ri === 0
+        ? { b: true, color: 'FFFFFF', size: 20, before: 40, after: 40 }
+        : { size: 20, before: 40, after: 40 }) +
+      '</w:tc>').join('') + '</w:tr>').join('');
+  void head;
+  return '<w:tbl><w:tblPr><w:tblW w:w="' + total + '" w:type="dxa"/><w:tblLayout w:type="fixed"/>' +
+    borders + '</w:tblPr><w:tblGrid>' +
+    widths.map(w => '<w:gridCol w:w="' + w + '"/>').join('') + '</w:tblGrid>' + body + '</w:tbl>' + para('', { before: 0, after: 0 });
+}
+
+function imagePara(rid, id, cx, cy, alt) {
+  return '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="60" w:after="120"/></w:pPr><w:r><w:drawing>' +
+    '<wp:inline distT="0" distB="0" distL="0" distR="0">' +
+    '<wp:extent cx="' + cx + '" cy="' + cy + '"/>' +
+    '<wp:docPr id="' + id + '" name="' + X(alt) + '" descr="' + X(alt) + '"/>' +
+    '<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>' +
+    '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+    '<pic:pic><pic:nvPicPr><pic:cNvPr id="0" name="img' + id + '.png"/><pic:cNvPicPr/></pic:nvPicPr>' +
+    '<pic:blipFill><a:blip r:embed="' + rid + '"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>' +
+    '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + cx + '" cy="' + cy + '"/></a:xfrm>' +
+    '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>' +
+    '</a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>';
+}
+
+/* ---------- 报告正文 ---------- */
+const LEVEL_COLOR = { high: 'C92A2A', mid: 'B26A00', low: '0369A1', good: '07845C' };
+
+function documentXml(m, images) {
+  const p = [];
+  // 封面
+  p.push(para('账镜 · 这份账说明了什么', { b: true, size: 20, color: '1D4ED8', align: 'center', before: 0, after: 60 }));
+  p.push(para(m.storeName + ' · 这段时间账目说明', { b: true, size: 36, align: 'center', before: 0, after: 160 }));
+  p.push(table([
+    ['项目', '内容'],
+    ['统计区间', m.from + ' ~ ' + m.to],
+    ['对比区间', m.compareMode],
+    ['生意类型 / 当前条件', m.bizName + ' · ' + m.condition],
+    ['账目来源 / 笔数', m.sourceName + ' · ' + m.rowCount.toLocaleString('zh-CN') + ' 笔'],
+    ['制表人 / 生成时间', m.author + ' · ' + m.generatedAt],
+    ['金额符号', m.currency + '（按表里原值显示，没有换算汇率）']
+  ], [2600, 6760]));
+  p.push(para(m.conclusion, { b: true, size: 26, fill: 'EAF2FF', border: '1D4ED8', indent: 120, before: 160, after: 160 }));
+  p.push(table([['一共收进', '实际留下', '一共做了', '客人平均花'],
+    m.coverNums.map(x => x.value)], [2340, 2340, 2340, 2340]));
+  p.push(para('', { before: 0, after: 0 }));
+
+  // 一、关键数字
+  p.push(para('一、先看这几个数', { b: true, size: 28, color: '173A86', before: 260, after: 100 }));
+  const kRows = [['指标', '数值', '指标', '数值']];
+  for (let i = 0; i < m.kpis.length; i += 2) {
+    kRows.push([m.kpis[i].label, m.kpis[i].value,
+      m.kpis[i + 1] ? m.kpis[i + 1].label : '', m.kpis[i + 1] ? m.kpis[i + 1].value : '']);
+  }
+  p.push(table(kRows, [2700, 2000, 2700, 1960]));
+  p.push(para('跟哪段时间比：' + m.compareMode + '。进账变化 ' + m.changes.net +
+    '，客人平均消费变化 ' + m.changes.ticket + '，单数变化 ' + m.changes.orders + '。', { size: 20 }));
+
+  // 二、图表
+  p.push(para('二、这 8 张图在说什么', { b: true, size: 28, color: '173A86', before: 260, after: 100 }));
+  images.forEach(im => {
+    p.push(para(im.title, { b: true, size: 22, before: 140, after: 40 }));
+    p.push(imagePara(im.rid, im.id, im.cx, im.cy, im.title));
+  });
+
+  // 三、建议
+  p.push(para('三、接下来可以做的几件事（待办 ' + m.todo.length + ' 条）',
+    { b: true, size: 28, color: '173A86', before: 260, after: 100 }));
+  if (!m.todo.length) p.push(para('待办都清完了。'));
+  m.todo.forEach((s, i) => {
+    p.push(para((i + 1) + '. ' + s.title + '　【' + s.levelText + '】',
+      { b: true, size: 23, color: LEVEL_COLOR[s.level] || '173A86', before: 140, after: 30 }));
+    p.push(para('为什么这么说：' + s.evidence, { size: 21, indent: 240 }));
+    p.push(para('可以这么做：' + s.advice, { size: 21, indent: 240, after: 100 }));
+    if (s.snapshot) p.push(para('标记时 → 现在：' + s.snapshot, { size: 19, color: '465976', indent: 240 }));
+  });
+  if (m.done.length) {
+    p.push(para('四、已经处理过的事', { b: true, size: 28, color: '173A86', before: 260, after: 100 }));
+    m.done.forEach(d => {
+      p.push(para('✓ ' + d.title, { b: true, size: 22, color: '07845C', before: 100, after: 20 }));
+      p.push(para('标记时间：' + d.at + (d.snapshot ? '　标记时 → 现在：' + d.snapshot : ''), { size: 19, indent: 240 }));
+    });
+  }
+  p.push(para('怎么算的（大白话）', { b: true, size: 24, color: '173A86', before: 300, after: 60 }));
+  m.notes.forEach(n => p.push(para(n, { size: 19, color: '465976' })));
+
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" ' +
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" ' +
+    'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" ' +
+    'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" ' +
+    'xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+    '<w:body>' + p.join('') +
+    '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>' +
+    '<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="720" w:footer="720" w:gutter="0"/>' +
+    '</w:sectPr></w:body></w:document>';
+}
+
+/**
+ * @param {Object} m 报告模型（与 LL.buildReportHTML / buildReportMarkdown 同一个）
+ *   m.charts: [{ title, dataUrl }]，dataUrl 为 canvas.toDataURL('image/png')
+ */
+LL.buildReportDOCX = function (m) {
+  const enc = new TextEncoder();
+  const images = [], media = [];
+  const MAX_W = 5000000, MAX_H = 2800000;   // EMU：约 5.5in × 3.1in，一页尽量放两张图
+  (m.charts || []).forEach((c, i) => {
+    const raw = String(c.dataUrl || '');
+    const comma = raw.indexOf(',');
+    if (comma < 0 || raw.indexOf('data:image/png;base64,') !== 0) return;
+    const bytes = b64ToBytes(raw.slice(comma + 1));
+    if (!bytes.length) return;
+    const sz = pngSize(bytes);
+    let cx = MAX_W, cy = Math.round(MAX_W * sz.h / sz.w);
+    if (cy > MAX_H) { cy = MAX_H; cx = Math.round(MAX_H * sz.w / sz.h); }
+    const id = images.length + 1, rid = 'rIdImg' + id;
+    images.push({ title: c.title, id, rid, cx, cy });
+    media.push({ name: 'word/media/img' + id + '.png', data: bytes, rid });
+  });
+
+  const relParts = [
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+  ].concat(media.map(x =>
+    '<Relationship Id="' + x.rid + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/img' + x.rid.slice(6) + '.png"/>'));
+  const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + relParts.join('') + '</Relationships>';
+
+  const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+    '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Microsoft YaHei" w:hAnsi="Microsoft YaHei" w:eastAsia="Microsoft YaHei"/><w:sz w:val="22"/></w:rPr></w:rPrDefault></w:docDefaults>' +
+    '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>' +
+    '</w:styles>';
+  const ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Default Extension="png" ContentType="image/png"/>' +
+    '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+    '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+
+  const entries = [
+    { name: '[Content_Types].xml', data: enc.encode(ct) },
+    { name: '_rels/.rels', data: enc.encode(rootRels) },
+    { name: 'word/document.xml', data: enc.encode(documentXml(m, images)) },
+    { name: 'word/_rels/document.xml.rels', data: enc.encode(rels) },
+    { name: 'word/styles.xml', data: enc.encode(styles) }
+  ].concat(media.map(x => ({ name: x.name, data: x.data })));
+  return LL.zipStore(entries);
+};
+})();
+
+
+/* ===== core/export-report.js ===== */
+
+/* 内部辅助函数用 IIFE 隔离，避免拼接后与别的模块同名 */
+(function(){
+const LL = globalThis.LL;
+
+/* =====================================================================
+   报告渲染器：同一个「报告模型」→ 网页 / Markdown / 打印版 HTML。
+   纯字符串函数，不碰 DOM，可在 Node 里直接跑单测。
+   Word 版见 export-docx.js（LL.buildReportDOCX）。
+   ===================================================================== */
+
+const CSS = '' +
+  '*{box-sizing:border-box}' +
+  'body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;color:#16233a;max-width:1000px;margin:0 auto;padding:32px;line-height:1.75;background:#fff}' +
+  'h1{font-size:24px;margin:0 0 4px}h2{font-size:17px;margin:30px 0 12px;border-bottom:2px solid #2563eb;padding-bottom:7px;color:#173a86}' +
+  '.cover{background:linear-gradient(135deg,#122a52,#1d4ed8);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:26px;break-inside:avoid}' +
+  '.cover .kick{font-size:12px;letter-spacing:2px;color:#bfdbfe;font-weight:700}' +
+  '.cover h1{font-size:26px;margin:8px 0 10px;color:#fff;border:0;padding:0}' +
+  '.cover .cmeta{font-size:12.5px;color:#e0ecff;line-height:2}' +
+  '.cover .cconcl{background:rgba(255,255,255,.14);border-radius:9px;padding:11px 14px;font-size:15px;font-weight:700;margin:14px 0;line-height:1.8}' +
+  '.cover .cnums{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}' +
+  '.cover .cnums div{background:rgba(255,255,255,.14);border-radius:8px;padding:9px 11px}' +
+  '.cover .cnums span{display:block;font-size:11px;color:#dbeafe}.cover .cnums b{display:block;font-size:19px;margin-top:2px}' +
+  '.cover .cfoot{margin-top:12px;font-size:12px;color:#dbeafe}' +
+  '.meta{color:#465976;font-size:12.5px;margin-bottom:18px}' +
+  'table.meta-t{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:13px}' +
+  'table.meta-t th,table.meta-t td{border:1px solid #e1e8f4;padding:7px 10px;text-align:left}' +
+  'table.meta-t th{background:#eef5ff;color:#173a86;font-weight:700;width:150px}' +
+  '.k{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0}' +
+  '.k div{background:#f4f6fb;border-radius:8px;padding:12px;break-inside:avoid}.k b{display:block;font-size:19px}.k span{font-size:11px;color:#465976}' +
+  '.c{border:1px solid #e5eaf3;border-radius:10px;padding:12px;margin-bottom:12px;break-inside:avoid}.c h3{font-size:13px;margin:0 0 8px}.c img{width:100%;display:block;border-radius:6px}' +
+  '.csum{font-size:12.5px;color:#243650;background:#f8fbff;border-left:3px solid #93b8f7;padding:7px 10px;margin-top:8px;border-radius:0 6px 6px 0}' +
+  '.s{border-left:3px solid #f59e0b;background:#fbfcfe;padding:12px 14px;margin-bottom:10px;border-radius:0 8px 8px 0;break-inside:avoid}' +
+  '.s.high{border-color:#ef4444}.s.good{border-color:#10b981}.s.low{border-color:#0ea5e9}.s-done{border-color:#10b981}' +
+  '.s h4{font-size:14px;margin:4px 0}.s p{font-size:12.5px;margin:5px 0;color:#243650}' +
+  '.s-tag{font-size:11px;margin-left:8px;background:#e7f8f1;color:#07845c;padding:2px 7px;border-radius:4px;font-weight:700}' +
+  '.sug-diff{font-size:12px;color:#243650;background:#f2f7ff;padding:7px 10px;border-radius:6px;margin-top:7px;line-height:1.7}' +
+  '.lv{font-size:10px;padding:2px 7px;border-radius:4px;background:#fff4e0;color:#b26a00}.s.high .lv{background:#feecec;color:#c92a2a}.s.good .lv{background:#e7f8f1;color:#07845c}.s.low .lv{background:#e8f4fe;color:#0369a1}' +
+  '.note{font-size:12px;color:#33465f;background:#f8fafd;padding:13px 15px;border-radius:8px;margin-top:24px;line-height:1.9}' +
+  '.note b{color:#16233a}' +
+  '.sign{margin-top:22px;text-align:right;font-size:11.5px;color:#465976}';
+
+function metaTable(m) {
+  const rows = [
+    ['统计区间', m.from + ' ~ ' + m.to], ['对比区间', m.compareMode],
+    ['生意类型', m.bizName], ['当前条件', m.condition],
+    ['账目来源', m.sourceName], ['账目笔数', m.rowCount.toLocaleString('zh-CN') + ' 笔'],
+    ['制表人', m.author], ['生成时间', m.generatedAt],
+    ['金额符号', m.currency + '（按表里原值显示，没有换算汇率）']
+  ];
+  return '<table class="meta-t">' + rows.map(r =>
+    '<tr><th>' + LL.esc(r[0]) + '</th><td>' + LL.esc(r[1]) + '</td></tr>').join('') + '</table>';
+}
+
+function body(m, withImages) {
+  const card = (c) => '<div class="c"><h3>' + LL.esc(c.title) + '</h3>' +
+    (withImages && c.dataUrl ? '<img src="' + c.dataUrl + '" alt="' + LL.esc(c.title) + '">' : '') +
+    (c.summary ? '<div class="csum">' + LL.esc(c.summary) + '</div>' : '') + '</div>';
+
+  const sugHtml = m.todo.map((s, i) => '<div class="s ' + s.level + '">' +
+    '<span class="lv ' + s.level + '">' + LL.esc(s.levelText) + '</span>' +
+    (s.stateText ? '<span class="s-tag">' + LL.esc(s.stateText) + '</span>' : '') +
+    '<h4>' + (i + 1) + '. ' + LL.esc(s.title) + '</h4>' +
+    '<p><b>为什么这么说：</b>' + LL.esc(s.evidence) + '</p>' +
+    '<p><b>可以这么做：</b>' + LL.esc(s.advice) + '</p>' +
+    (s.snapshot ? '<div class="sug-diff"><b>标记时 → 现在：</b>' + LL.esc(s.snapshot) + '</div>' : '') +
+    '</div>').join('');
+
+  const doneHtml = m.done.length ? ('<h2>四、已经处理过的事</h2>' + m.done.map(x =>
+    '<div class="s s-done"><h4>✓ ' + LL.esc(x.title) + '</h4><p>标记时间：' + LL.esc(x.at) + '</p>' +
+    (x.snapshot ? '<div class="sug-diff"><b>标记时 → 现在：</b>' + LL.esc(x.snapshot) + '</div>' : '') +
+    '</div>').join('')) : '';
+
+  return '<div class="cover"><div class="kick">账镜 · 这份账说明了什么</div>' +
+    '<h1>' + LL.esc(m.storeName) + ' · 这段时间账目说明</h1>' +
+    '<div class="cconcl">' + LL.esc(m.conclusion) + '</div>' +
+    '<div class="cnums">' + m.coverNums.map(x =>
+      '<div><span>' + LL.esc(x.label) + '</span><b>' + LL.esc(x.value) + '</b></div>').join('') + '</div>' +
+    '<div class="cfoot">待办建议 ' + m.todo.length + ' 条 · 已处理 ' + m.done.length + ' 条 · 先不看 ' + m.ignoredCount +
+    ' 条　|　' + LL.esc(m.currency) + '，按表里原值显示</div></div>' +
+    metaTable(m) +
+    '<h2>一、先看这几个数</h2><div class="k">' + m.kpis.map(k =>
+      '<div><span>' + LL.esc(k.label) + '</span><b>' + LL.esc(k.value) + '</b></div>').join('') + '</div>' +
+    '<p style="font-size:12.5px;color:#243650">跟哪段时间比：' + LL.esc(m.compareMode) +
+    '。进账变化 <b>' + LL.esc(m.changes.net) + '</b>，客人平均消费变化 <b>' + LL.esc(m.changes.ticket) +
+    '</b>，单数变化 <b>' + LL.esc(m.changes.orders) + '</b>。</p>' +
+    '<h2>二、这 8 张图在说什么</h2>' + m.charts.map(card).join('') +
+    '<h2>三、接下来可以做的几件事（待办 ' + m.todo.length + ' 条）</h2>' +
+    (m.todo.length ? sugHtml : '<p>待办都清完了。</p>') + doneHtml +
+    '<div class="note"><b>怎么算的（大白话）</b><br>' + m.notes.map(n => LL.esc(n)).join('<br>') + '</div>' +
+    '<div class="sign">账镜 LedgerLens · 在本机生成，账目没有上传 · 请结合实际情况看</div>';
+}
+
+/** 网页版 .html：自包含、离线可看、可打印 */
+LL.buildReportHTML = function (m) {
+  return '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+    '<title>账镜 · ' + LL.esc(m.storeName) + ' 账目结论单</title><style>' + CSS +
+    '@media print{body{padding:0}.s,.c,.cover,.k div{break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}}' +
+    '</style></head><body>' + body(m, true) + '</body></html>';
+};
+
+/** 打印 / 另存 PDF 版：A4 分页、封面独占一页、去掉屏幕提示 */
+LL.buildReportPrintHTML = function (m) {
+  const printCss = CSS +
+    '@page{size:A4;margin:13mm}' +
+    'body{max-width:none;padding:0;font-size:12px}' +
+    '.cover{page-break-after:always;break-after:page;border-radius:0;margin:0;padding:22mm 12mm;min-height:240mm}' +
+    'h2{page-break-after:avoid;break-after:avoid}' +
+    '.c,.s,.k div,.note,.meta-t{break-inside:avoid;page-break-inside:avoid}' +
+    '.c img{max-height:95mm;object-fit:contain}' +
+    '.s,.c,.cover,.k div{-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    '.print-tip{background:#fff8e8;border:1px solid #f0b429;color:#8a4b00;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;font-weight:700}' +
+    '@media print{.print-tip{display:none}}';
+  return '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">' +
+    '<title>账镜 · ' + LL.esc(m.storeName) + ' 账目结论单（打印 / 存 PDF）</title><style>' + printCss +
+    '</style></head><body>' +
+    '<div class="print-tip">在打印窗口里，目标选「另存为 PDF」就能存成 PDF。这一步同样在你自己的电脑里完成，账目不会上传。</div>' +
+    body(m, true) + '</body></html>';
+};
+
+/** Markdown 版：纯文字，方便贴进笔记 / 文档系统；图以文字速览代替 */
+LL.buildReportMarkdown = function (m) {
+  const L = [];
+  L.push('# 账镜 · ' + m.storeName + ' 账目结论单');
+  L.push('');
+  L.push('> **一句话结论**：' + m.conclusion);
+  L.push('');
+  L.push('| 项目 | 内容 |');
+  L.push('| --- | --- |');
+  [
+    ['统计区间', m.from + ' ~ ' + m.to], ['对比区间', m.compareMode],
+    ['生意类型', m.bizName], ['当前条件', m.condition],
+    ['账目来源', m.sourceName], ['账目笔数', m.rowCount.toLocaleString('zh-CN') + ' 笔'],
+    ['制表人', m.author], ['生成时间', m.generatedAt],
+    ['金额符号', m.currency + '（按表里原值显示，没有换算汇率）']
+  ].forEach(r => L.push('| ' + r[0] + ' | ' + String(r[1]).replace(/\|/g, '\\|') + ' |'));
+  L.push('');
+  L.push('| ' + m.coverNums.map(x => x.label).join(' | ') + ' |');
+  L.push('| ' + m.coverNums.map(() => '---').join(' | ') + ' |');
+  L.push('| ' + m.coverNums.map(x => x.value).join(' | ') + ' |');
+  L.push('');
+  L.push('建议进度：待办 ' + m.todo.length + ' 条 · 已处理 ' + m.done.length + ' 条 · 先不看 ' + m.ignoredCount + ' 条。');
+  L.push('');
+  L.push('## 一、先看这几个数');
+  L.push('');
+  L.push('| 指标 | 数值 |');
+  L.push('| --- | --- |');
+  m.kpis.forEach(k => L.push('| ' + k.label + ' | ' + k.value + ' |'));
+  L.push('');
+  L.push('跟哪段时间比：' + m.compareMode + '。进账变化 **' + m.changes.net +
+    '**，客人平均消费变化 **' + m.changes.ticket + '**，单数变化 **' + m.changes.orders + '**。');
+  L.push('');
+  L.push('## 二、这 8 张图在说什么');
+  L.push('');
+  L.push('> 这一版是纯文字，方便贴进笔记和文档系统。**彩色的 8 张图**在「网页 / Word / PDF」版里。下面给每张图一句话速览。');
+  L.push('');
+  m.charts.forEach((c, i) => {
+    L.push((i + 1) + '. **' + c.title + '**' + (c.summary ? '：' + c.summary : '：见网页 / Word / PDF 版里的图。'));
+  });
+  L.push('');
+  L.push('## 三、接下来可以做的几件事（待办 ' + m.todo.length + ' 条）');
+  L.push('');
+  if (!m.todo.length) L.push('待办都清完了。');
+  m.todo.forEach((s, i) => {
+    L.push('### ' + (i + 1) + '. ' + s.title + '　【' + s.levelText + '】');
+    L.push('');
+    L.push('- **为什么这么说**：' + s.evidence);
+    L.push('- **可以这么做**：' + s.advice);
+    if (s.snapshot) L.push('- **标记时 → 现在**：' + s.snapshot);
+    L.push('');
+  });
+  if (m.done.length) {
+    L.push('## 四、已经处理过的事');
+    L.push('');
+    m.done.forEach(d => {
+      L.push('- **✓ ' + d.title + '**　标记时间：' + d.at + (d.snapshot ? '；标记时 → 现在：' + d.snapshot : ''));
+    });
+    L.push('');
+  }
+  L.push('## 怎么算的（大白话）');
+  L.push('');
+  m.notes.forEach(n => L.push('- ' + n));
+  L.push('');
+  L.push('---');
+  L.push('');
+  L.push('*账镜 LedgerLens · 在本机生成，账目没有上传 · 请结合实际情况看*');
+  L.push('');
+  return L.join('\n');
+};
+})();
+
 /* ===== ui/app.js ===== */
 /* UI 分片：由 build.mjs 按 manifest.json 顺序拼进同一个作用域，
    共享 LL / $ / state / 各渲染函数，因此不写 import/export。 */
@@ -2066,8 +2840,9 @@ function downloadBinary(name,bytes,mime){
   setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
 }
 function download(name,content,mime){
-  const isHtml=/html/i.test(mime||'');
-  const blob=new Blob([(isHtml?'':'\uFEFF')+content],{type:(mime||'text/plain')+';charset=utf-8'});
+  // BOM 只给 CSV：WPS / Excel 靠它识别中文；Markdown 带 BOM 反而会在编辑器里冒出怪字符
+  const needBom=/csv/i.test(mime||'');
+  const blob=new Blob([(needBom?'\uFEFF':'')+content],{type:(mime||'text/plain')+';charset=utf-8'});
   const a=document.createElement('a'), url=URL.createObjectURL(blob);
   a.href=url; a.download=name; document.body.appendChild(a); a.click();
   setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
@@ -2940,104 +3715,256 @@ $('#btnNext').addEventListener('click',()=>{ state.page++; renderDetail(state.ct
 /* UI 分片：由 build.mjs 按 manifest.json 顺序拼进同一个作用域，
    共享 LL / $ / state / 各渲染函数，因此不写 import/export。 */
 
-/* ---------- 导出 ---------- */
-$('#btnExportCsv').addEventListener('click',()=>{
-  if(!state.ctx||!state.ctx.rows.length){ toast('按现在选的条件没有账可导出'); return; }
-  const head=['日期','时间','单号','收/退','金额','进价','赚的差价','怎么付的','哪类东西','商品/明细','数量','门店','哪门生意','会员号','来自哪份表'];
-  const q=s=>{const t=String(s==null?'':s);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;};
-  const pr=r=>r.cost==null||r.direction==='支出'?null:(r.direction==='退款'?r.amount+r.cost:r.amount-r.cost);
-  const lines=[head.join(',')].concat(state.ctx.rows.map(r=>[r.date,r.time,r.orderNo,r.direction,r.amount,r.cost==null?'':r.cost,pr(r)==null?'':LL.round(pr(r),2),r.payMethod,r.category,r.item,r.qty,r.store,(LL.BIZ[r.biz]?LL.BIZ[r.biz].name:r.biz),r.member,r.src].map(q).join(',')));
-  download('账目明细_'+state.filters.from+'_'+state.filters.to+'.csv',lines.join('\n'),'text/csv');
-  toast('每一笔账的表格已导出');
-});
-$('#btnReport').addEventListener('click',()=>{
-  if(!state.ctx){ toast('先放一份账目进来，再导出'); return; }
-  const ctx=state.ctx;
-  const imgs={};
-  ['chartTrend','chartPay','chartCat','chartProfit','chartHour','chartWeek','chartStore','chartRefund'].forEach(id=>{
-    try{ imgs[id]=$('#'+id).toDataURL('image/png'); }catch(e){ imgs[id]=''; }
+/* =====================================================================
+   导出中心：两种东西 × 多个格式
+     一、每一笔账的表格   → 好看的 Excel(.xlsx) / 纯文本(.csv)
+     二、账目结论单       → 网页(.html) / Word(.docx) / Markdown(.md) / PDF(打印另存)
+   全部在本机生成，账目一次都不上传。
+   ===================================================================== */
+
+const EXP_HEAD = ['日期', '时间', '单号', '收/退', '金额', '进价', '赚的差价', '怎么付的',
+  '哪类东西', '商品/明细', '数量', '门店', '哪门生意', '会员号', '来自哪份表'];
+const EXP_WIDTHS = [13, 10, 24, 9, 13, 13, 14, 15, 16, 28, 9, 20, 14, 15, 20];
+const EXP_NOTES = [
+  ['日期', '这笔账发生在哪一天'],
+  ['时间', '几点几分，用来算「几点最忙」'],
+  ['单号', '收银系统给的流水号；同一个单号只算一单'],
+  ['收/退', '收入、退款还是支出；退款行的金额会标红'],
+  ['金额', '这一笔实际收进/退掉的钱，退款是负数'],
+  ['进价', '这一笔货的成本；没记进价就留空，不会被当成 0'],
+  ['赚的差价', '卖价减进价；退款时把当时的成本加回来。只算记了进价的那部分账'],
+  ['怎么付的', '微信、支付宝、银行卡、现金、医保等'],
+  ['哪类东西', '品类或收入项，比如生鲜、处方药、房费'],
+  ['商品/明细', '具体商品名称或摘要'],
+  ['数量', '件数 / 份数 / 间夜'],
+  ['门店', '哪家店或哪个营业点'],
+  ['哪门生意', '超市 / 药店 / 酒店等业务类型'],
+  ['会员号', '会员卡号或客号，没有就留空'],
+  ['来自哪份表', '这份流水是从哪个文件导进来的，方便回溯']
+];
+
+function expProfit(r) {
+  if (r.cost == null || r.direction === '支出') return '';
+  return LL.round(r.direction === '退款' ? r.amount + r.cost : r.amount - r.cost, 2);
+}
+
+function tableModel() {
+  const rows = state.ctx.rows.map(r => [
+    r.date, r.time, r.orderNo, r.direction, r.amount,
+    r.cost == null ? '' : r.cost, expProfit(r), r.payMethod, r.category, r.item,
+    r.qty == null || r.qty === '' ? '' : r.qty, r.store,
+    (LL.BIZ[r.biz] ? LL.BIZ[r.biz].name : r.biz), r.member, r.src
+  ]);
+  return {
+    head: EXP_HEAD, data: rows, widths: EXP_WIDTHS,
+    moneyCols: [4, 5, 6], intCols: [10],
+    refundFlags: state.ctx.rows.map(r => r.direction === '退款' || r.direction === '支出'),
+    notes: EXP_NOTES,
+    meta: [
+      ['导出内容', '当前筛选下的每一笔账，共 ' + rows.length.toLocaleString('zh-CN') + ' 笔'],
+      ['统计区间', state.filters.from + ' ~ ' + state.filters.to],
+      ['账目来源', state.sourceName],
+      ['生成时间', new Date().toLocaleString('zh-CN')],
+      ['金额符号', LL.CUR || '（不显示）'],
+      ['怎么打开', 'Excel / WPS 打开即可；首行已冻结，可点表头筛选']
+    ]
+  };
+}
+
+function exportCSV() {
+  if (!state.ctx || !state.ctx.rows.length) { toast('按现在选的条件没有账可导出'); return; }
+  const q = s => { const t = String(s == null ? '' : s); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+  const m = tableModel();
+  const lines = [EXP_HEAD.join(',')].concat(m.data.map(r => r.map(q).join(',')));
+  download('账目明细_' + state.filters.from + '_' + state.filters.to + '.csv', lines.join('\n'), 'text/csv');
+  toast('纯文本表格已导出（给别的系统用）');
+}
+
+/* ---------- 报告模型：四种格式共用同一份数据 ---------- */
+function snapshotPlain(st, ctx) {
+  if (!st || !st.snap) return '';
+  const a = st.snap;
+  const bNet = LL.round(ctx.net, 2), bTicket = LL.round(ctx.avgTicket, 2);
+  const pct = (x, y) => x ? LL.pct((y - x) / Math.abs(x), 1) : '—';
+  return '实际进账 ' + LL.money(a.net, true) + ' → ' + LL.money(bNet, true) + '（' + pct(a.net, bNet) + '）' +
+    '；客人平均花 ' + LL.money(a.ticket) + ' → ' + LL.money(bTicket);
+}
+
+function topText(arr, n, unit) {
+  if (!arr || !arr.length) return '这段时间没有可统计的数据';
+  return arr.slice(0, n).map(x => x.label + ' ' + (unit === 'money' ? LL.money(x.value, true) : LL.pct(x.value))).join('、');
+}
+
+function chartSummaries(ctx) {
+  const hourly = ctx.hourly || [];
+  let peakHour = 0;
+  hourly.forEach((v, i) => { if (v > hourly[peakHour]) peakHour = i; });
+  const weekAvg = ctx.weekAvg || [];
+  let peakWeek = 0;
+  weekAvg.forEach((v, i) => { if (v > weekAvg[peakWeek]) peakWeek = i; });
+  return [
+    ['平均每天进账 ' + LL.money(ctx.dailyAvg, true) + '；最高的一天 ' +
+      (ctx.peakDay ? ctx.peakDay.date + ' ' + LL.money(ctx.peakDay.net, true) : '—') +
+      '，最低的一天 ' + (ctx.lowDay ? ctx.lowDay.date + ' ' + LL.money(ctx.lowDay.net, true) : '—') + '。'],
+    ['用得最多的收款方式：' + topText(ctx.payArr, 3, 'money') + '；最集中一种占 ' + LL.pct(ctx.topPayShare) + '。'],
+    ['卖得最多的品类：' + topText(ctx.catArr, 3, 'money') + '。'],
+    ['赚差价最多的品类：' + topText(ctx.catProfitArr, 3, 'money') + '。'],
+    ['最忙的时段是 ' + String(peakHour).padStart(2, '0') + ':00 前后；晚上 10 点到早 6 点占 ' + LL.pct(ctx.lateRatio) + '。'],
+    ['日均最高的是 ' + (LL.WEEK_NAMES[peakWeek] || '—') + '，' + LL.money(weekAvg[peakWeek] || 0, true) + '。'],
+    ['进账靠前的门店：' + topText(ctx.storeArr, 3, 'money') + '。'],
+    ['退款最集中的品类：' + topText(ctx.refundArr, 3, 'money') + '；整体退回 ' + LL.pct(ctx.refundRate, 2) + '。']
+  ].map(x => x[0]);
+}
+
+function reportModel() {
+  const ctx = state.ctx;
+  const charts = [
+    ['chartTrend', '每天进账多少，是在变好还是变差'],
+    ['chartPay', '客人都是怎么付钱的'], ['chartCat', '哪类东西最卖钱'],
+    ['chartProfit', '哪类东西最赚差价'], ['chartHour', '一天里几点最忙'],
+    ['chartWeek', '周几生意最好'], ['chartStore', '哪家店 / 哪门生意做得好'],
+    ['chartRefund', '退款主要出在哪类东西']
+  ];
+  const sums = chartSummaries(ctx);
+  const chartList = charts.map((c, i) => {
+    let dataUrl = '';
+    try { dataUrl = $('#' + c[0]).toDataURL('image/png'); } catch (e) { dataUrl = ''; }
+    return { title: c[1], dataUrl: dataUrl, summary: sums[i] };
   });
-  const card=(title,img)=>'<div class="c"><h3>'+title+'</h3>'+(img?'<img src="'+img+'">':'')+'</div>';
-  const kpis=[['实际进账',LL.money(ctx.net,true)],['赚的差价',ctx.hasCost?LL.money(ctx.grossProfit,true):'—'],
-    ['差价占比',(ctx.hasCost&&ctx.grossMargin!==null)?LL.pct(ctx.grossMargin,1):'—'],['进货成本',ctx.hasCost?LL.money(ctx.costTotal,true):'—'],
-    ['一共多少单',ctx.orders.toLocaleString('zh-CN')],['客人平均花多少',LL.money(ctx.avgTicket)],
-    ['退回去多少',LL.pct(ctx.refundRate,2)],['平均每天进账',LL.money(ctx.dailyAvg,true)],
-    ['每天稳不稳',String(LL.round(ctx.cv,2))],['有进价的账占多少',ctx.hasCost?LL.pct(ctx.costCoverage):'—']];
-  const sugAll=state.allSuggestions||state.suggestions;
-  const doneList=sugAll.filter(x=>x._state==='done'), ignList=sugAll.filter(x=>x._state==='ignored');
-  const todoList=sugAll.filter(x=>!x._state);
-  const sugHtml=todoList.map((s,i)=>'<div class="s"><span class="lv '+s.level+'">'+LL.LEVEL_TEXT[s.level]+'</span>'+
-    (s._state?'<span class="s-tag">'+LL.esc(s._state==='done'?'✓ 已处理':'⊘ 先不看')+'</span>':'')+
-    '<h4>'+(i+1)+'. '+LL.esc(s.title)+'</h4><p><b>为什么这么说：</b>'+LL.esc(s.evidence)+'</p><p><b>可以怎么做：</b>'+LL.esc(s.advice)+'</p>'+
-    (s._st?sugSnapshotText(s._st,ctx):'')+'</div>').join('');
-  const doneHtml=doneList.length?('<h2>四、已经处理过的事</h2>'+doneList.map(x=>
-    '<div class="s s-done"><h4>✓ '+LL.esc(x.title)+'</h4><p>标记时间：'+LL.esc(x._st.at)+'</p>'+sugSnapshotText(x._st,ctx)+'</div>').join('')):'';
-  const author=(lsGet(LS.author,'')||$('#reportAuthor').value||'').trim()||'（未填）';
-  const storeName=state.filters.store||($('#filterStore').selectedOptions[0]?$('#filterStore').selectedOptions[0].text:'')||'全部门店';
-  const bizName=$('#filterBiz').selectedOptions[0].text;
-  const extra=[];
-  if(state.filters.pay) extra.push('收款方式：'+state.filters.pay);
-  if(state.filters.category) extra.push('只看：'+state.filters.category);
-  if(state.filters.weekday!==''&&state.filters.weekday!=null) extra.push('只看'+LL.WEEK_NAMES[Number(state.filters.weekday)]);
-  if(state.filters.hour!==''&&state.filters.hour!=null) extra.push('只看 '+String(state.filters.hour).padStart(2,'0')+':00');
-  const cond=extra.length?extra.join(' · '):'没有额外条件，看的是全部账目';
-  const conclusion=$('#heroTitle').textContent;
-  const coverNums=[['一共收进',LL.money(ctx.sales,true)],['实际留下',LL.money(ctx.net,true)],
-    ['一共做了',ctx.orders.toLocaleString('zh-CN')+' 单'],['客人平均花',LL.money(ctx.avgTicket)]];
-  const html='<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>账镜 · '+LL.esc(storeName)+' 账目结论单</title><style>'+
-    'body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#16233a;max-width:1000px;margin:0 auto;padding:32px;line-height:1.7}'+
-    'h1{font-size:24px;margin:0 0 4px}h2{font-size:16px;margin:30px 0 12px;border-bottom:2px solid #2563eb;padding-bottom:6px}'+
-    '.cover{background:linear-gradient(135deg,#122a52,#1d4ed8);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:26px;break-inside:avoid}'+
-    '.cover .kick{font-size:12px;letter-spacing:2px;color:#bfdbfe;font-weight:700}'+
-    '.cover h1{font-size:26px;margin:8px 0 10px;color:#fff;border:0;padding:0}'+
-    '.cover .cmeta{font-size:12.5px;color:#e0ecff;line-height:2}'+
-    '.cover .cconcl{background:rgba(255,255,255,.14);border-radius:9px;padding:11px 14px;font-size:15px;font-weight:700;margin:14px 0;line-height:1.75}'+
-    '.cover .cnums{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}'+
-    '.cover .cnums div{background:rgba(255,255,255,.14);border-radius:8px;padding:9px 11px}'+
-    '.cover .cnums span{display:block;font-size:11px;color:#dbeafe}.cover .cnums b{display:block;font-size:19px;margin-top:2px}'+
-    '.cover .cfoot{margin-top:12px;font-size:12px;color:#dbeafe}'+
-    '.meta{color:#465976;font-size:12.5px;margin-bottom:18px}.k{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}'+
-    '.k div{background:#f4f6fb;border-radius:8px;padding:12px}.k b{display:block;font-size:20px}.k span{font-size:11px;color:#465976}'+
-    '.c{border:1px solid #e5eaf3;border-radius:10px;padding:12px;margin-bottom:12px;break-inside:avoid}.c h3{font-size:13px;margin:0 0 8px}.c img{width:100%;display:block}'+
-    '.s{border-left:3px solid #f59e0b;background:#fbfcfe;padding:12px 14px;margin-bottom:10px;border-radius:0 8px 8px 0;break-inside:avoid}'+
-    '.s.high{border-color:#ef4444}.s.good{border-color:#10b981}.s.low{border-color:#0ea5e9}.s-done{border-color:#10b981}'+
-    '.s h4{font-size:14px;margin:4px 0}.s p{font-size:12.5px;margin:5px 0;color:#243650}'+
-    '.s-tag{font-size:11px;margin-left:8px;background:#e7f8f1;color:#07845c;padding:2px 7px;border-radius:4px;font-weight:700}'+
-    '.sug-diff{font-size:12px;color:#243650;background:#f2f7ff;padding:7px 10px;border-radius:6px;margin-top:7px;line-height:1.7}'+
-    '.lv{font-size:10px;padding:2px 7px;border-radius:4px;background:#fff4e0;color:#b26a00}.s.high .lv{background:#feecec;color:#c92a2a}.s.good .lv{background:#e7f8f1;color:#07845c}.s.low .lv{background:#e8f4fe;color:#0369a1}'+
-    '.note{font-size:11.5px;color:#465976;background:#f8fafd;padding:12px;border-radius:8px;margin-top:24px}'+
-    '@media print{body{padding:0}.s,.c,.cover{break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
-    '</style></head><body>'+
-    '<div class="cover"><div class="kick">账镜 · 这份账说明了什么</div>'+
-    '<h1>'+LL.esc(storeName)+' · 这段时间账目说明</h1>'+
-    '<div class="cmeta">统计区间：'+state.filters.from+' ~ '+state.filters.to+'　|　对比区间：'+LL.esc(ctx.compareMode)+'<br>'+
-    '生意类型：'+LL.esc(bizName)+'　|　当前条件：'+LL.esc(cond)+'<br>'+
-    '账目来源：'+LL.esc(state.sourceName)+'　|　共 '+ctx.rows.length.toLocaleString('zh-CN')+' 笔　|　制表人：'+LL.esc(author)+'　|　生成时间：'+new Date().toLocaleString('zh-CN')+'</div>'+
-    '<div class="cconcl">'+LL.esc(conclusion)+'</div>'+
-    '<div class="cnums">'+coverNums.map(x=>'<div><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div>'+
-    '<div class="cfoot">待办建议 '+sugAll.filter(x=>!x._state).length+' 条 · 已处理 '+doneList.length+' 条 · 先不看 '+ignList.length+' 条　|　金额符号 '+(LL.CUR||'（不显示）')+'，按表里原值显示，没有换算汇率</div></div>'+
-    '<h2>一、先看这几个数</h2><div class="k">'+kpis.map(k=>'<div><span>'+k[0]+'</span><b>'+k[1]+'</b></div>').join('')+'</div>'+
-    '<p style="font-size:12.5px;color:#243650">跟哪段时间比：'+LL.esc(ctx.compareMode)+'。进账变化 <b>'+LL.pct(ctx.chgNet)+'</b>，客人平均消费变化 <b>'+LL.pct(ctx.chgTicket)+'</b>，单数变化 <b>'+LL.pct(ctx.chgOrders)+'</b>。</p>'+
-    '<h2>二、这 8 张图在说什么</h2>'+
-    card('每天进账多少，是在变好还是变差',imgs.chartTrend)+card('客人都是怎么付钱的',imgs.chartPay)+card('哪类东西最卖钱',imgs.chartCat)+
-    card('哪类东西最赚差价',imgs.chartProfit)+card('一天里几点最忙',imgs.chartHour)+card('周几生意最好',imgs.chartWeek)+
-    card('哪家店 / 哪门生意做得好',imgs.chartStore)+card('退款主要出在哪类东西',imgs.chartRefund)+
-    '<h2>三、接下来可以做的几件事（待办 '+todoList.length+' 条）</h2>'+(todoList.length?sugHtml:'<p>待办都清完了。</p>')+
-    doneHtml+
-    '<div class="note">怎么算的（大白话）：收进来的钱扣掉退款和支出，就是「实际进账」；除以单数，就是「客人平均花多少」。'+
-    '<b>赚的差价</b>只算记了进价的那部分账：卖价减进价，客人退货时再把当时那份成本加回来。没记进价的先放在一边，<b>不会当成不要钱</b>；这次有 '+LL.pct(ctx.costCoverage)+' 的账记了进价。'+
-    '注意：差价还没扣房租、人工、水电、平台抽成，不等于最后落到口袋的钱。'+
-    '特别高、特别低、特别大的单子只是按当前「判定标准」挑出来提醒核对，不一定是错账；标准可由制表人在「⚙ 判定标准」里调整。'+
-    '这份报告是在你自己的电脑里生成的，账目没有上传，请结合实际情况看。</div>'+
-    '</body></html>';
-  download('账镜_账目结论单_'+state.filters.from+'_'+state.filters.to+'.html',html,'text/html');
-  toast('结论已导出，双击打开就能看，也能直接打印');
 
+  const sugAll = state.allSuggestions || state.suggestions || [];
+  const doneList = sugAll.filter(x => x._state === 'done');
+  const ignList = sugAll.filter(x => x._state === 'ignored');
+  const todoList = sugAll.filter(x => !x._state);
+  const author = (lsGet(LS.author, '') || ($('#reportAuthor') ? $('#reportAuthor').value : '') || '').trim() || '（未填）';
+  const storeName = state.filters.store || ($('#filterStore').selectedOptions[0] ? $('#filterStore').selectedOptions[0].text : '') || '全部门店';
+  const bizName = $('#filterBiz').selectedOptions[0].text;
+  const extra = [];
+  if (state.filters.pay) extra.push('收款方式：' + state.filters.pay);
+  if (state.filters.category) extra.push('只看：' + state.filters.category);
+  if (state.filters.weekday !== '' && state.filters.weekday != null) extra.push('只看' + LL.WEEK_NAMES[Number(state.filters.weekday)]);
+  if (state.filters.hour !== '' && state.filters.hour != null) extra.push('只看 ' + String(state.filters.hour).padStart(2, '0') + ':00');
+  const cond = extra.length ? extra.join(' · ') : '没有额外条件，看的是全部账目';
+
+  return {
+    storeName: storeName, bizName: bizName, condition: cond,
+    from: state.filters.from, to: state.filters.to,
+    compareMode: ctx.compareMode, sourceName: state.sourceName,
+    rowCount: ctx.rows.length, author: author,
+    generatedAt: new Date().toLocaleString('zh-CN'),
+    currency: LL.CUR || '（不显示）',
+    conclusion: $('#heroTitle').textContent,
+    coverNums: [
+      { label: '一共收进', value: LL.money(ctx.sales, true) },
+      { label: '实际留下', value: LL.money(ctx.net, true) },
+      { label: '一共做了', value: ctx.orders.toLocaleString('zh-CN') + ' 单' },
+      { label: '客人平均花', value: LL.money(ctx.avgTicket) }
+    ],
+    kpis: [
+      ['实际进账', LL.money(ctx.net, true)], ['赚的差价', ctx.hasCost ? LL.money(ctx.grossProfit, true) : '—'],
+      ['差价占比', (ctx.hasCost && ctx.grossMargin !== null) ? LL.pct(ctx.grossMargin, 1) : '—'],
+      ['进货成本', ctx.hasCost ? LL.money(ctx.costTotal, true) : '—'],
+      ['一共多少单', ctx.orders.toLocaleString('zh-CN')],
+      ['客人平均花多少', LL.money(ctx.avgTicket)], ['退回去多少', LL.pct(ctx.refundRate, 2)],
+      ['平均每天进账', LL.money(ctx.dailyAvg, true)], ['每天稳不稳', String(LL.round(ctx.cv, 2))],
+      ['有进价的账占多少', ctx.hasCost ? LL.pct(ctx.costCoverage) : '—']
+    ].map(x => ({ label: x[0], value: x[1] })),
+    changes: { net: LL.pct(ctx.chgNet), ticket: LL.pct(ctx.chgTicket), orders: LL.pct(ctx.chgOrders) },
+    charts: chartList,
+    todo: todoList.map(s => ({
+      level: s.level, levelText: LL.LEVEL_TEXT[s.level] || '留意一下', title: s.title,
+      evidence: s.evidence, advice: s.advice,
+      snapshot: s._st ? snapshotPlain(s._st, ctx) : '',
+      stateText: s._state ? (s._state === 'done' ? '✓ 已处理' : '⊘ 先不看') : ''
+    })),
+    done: doneList.map(x => ({ title: x.title, at: x._st ? x._st.at : '', snapshot: snapshotPlain(x._st, ctx) })),
+    ignoredCount: ignList.length,
+    notes: [
+      '收进来的钱扣掉退款和支出，就是「实际进账」；除以单数，就是「客人平均花多少」。',
+      '赚的差价只算记了进价的那部分账：卖价减进价，客人退货时再把当时那份成本加回来。没记进价的先放在一边，不会当成不要钱；这次有 ' + LL.pct(ctx.costCoverage) + ' 的账记了进价。',
+      '注意：差价还没扣房租、人工、水电、平台抽成，不等于最后落到口袋的钱。',
+      '特别高、特别低、特别大的单子只是按当前「判定标准」挑出来提醒核对，不一定是错账；标准可由制表人在「⚙ 判定标准」里调整。',
+      '这份报告是在你自己的电脑里生成的，账目没有上传，请结合实际情况看。'
+    ]
+  };
+}
+
+function fileName(ext) { return '账镜_账目结论单_' + state.filters.from + '_' + state.filters.to + '.' + ext; }
+
+/* ---------- 四种报告格式 ---------- */
+function exportHTML() {
+  const m = reportModel();
+  download(fileName('html'), LL.buildReportHTML(m), 'text/html');
+  toast('网页版结论单已导出，双击就能看，也能直接打印');
+}
+function exportMarkdown() {
+  const m = reportModel();
+  download(fileName('md'), LL.buildReportMarkdown(m), 'text/markdown');
+  toast('Markdown 已导出，可直接贴进笔记或文档系统');
+}
+function exportDOCX() {
+  const m = reportModel();
+  const bytes = LL.buildReportDOCX(m);
+  downloadBinary(fileName('docx'), bytes,
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+  toast('Word 版已导出，图表和建议都在里面');
+}
+function exportPDF() {
+  const m = reportModel();
+  const html = LL.buildReportPrintHTML(m);
+  const old = document.getElementById('printFrame');
+  if (old) old.remove();
+  const f = document.createElement('iframe');
+  f.id = 'printFrame';
+  f.setAttribute('aria-hidden', 'true');
+  f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0';
+  document.body.appendChild(f);
+  f.onload = () => setTimeout(() => {
+    try { f.contentWindow.focus(); f.contentWindow.print(); }
+    catch (e) { toast('打印窗口没能自动打开，请改用网页版再按 Ctrl+P'); }
+  }, 450);
+  f.srcdoc = html;
+  toast('已打开打印窗口：目标选「另存为 PDF」就能存成 PDF');
+}
+
+function openExport(which) {
+  if (!state.ctx) { toast('先放一份账目进来，再导出'); return; }
+  showModal('exportModal');
+  const box = $('#exportModal .modal-b');
+  const target = which === 'table' ? $('#expGroupTable') : $('#expGroupReport');
+  $$('.export-group').forEach(g => g.classList.toggle('focus', g === target));
+  if (box && target) setTimeout(() => { box.scrollTop = Math.max(0, target.offsetTop - 12); }, 30);
+  $('#expCount').textContent = state.ctx.rows.length.toLocaleString('zh-CN');
+}
+
+/* ---------- 事件绑定 ---------- */
+$('#btnExportCsv').addEventListener('click', () => openExport('table'));
+$('#btnReport').addEventListener('click', () => openExport('report'));
+
+const exportActions = [
+  ['fmtXlsx', async () => {
+    if (!state.ctx.rows.length) { toast('按现在选的条件没有账可导出'); return; }
+    const name = '账目明细_' + state.filters.from + '_' + state.filters.to + '.xlsx';
+    const mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    const model = tableModel();
+    let bytes;
+    try { bytes = await LL.buildStyledXLSXAsync(model); }
+    catch (e) { bytes = LL.buildStyledXLSX(model); }
+    downloadBinary(name, bytes, mime);
+    toast('好看的 Excel 表格已导出：列宽、表头、合计都排好了');
+  }],
+  ['fmtCsv', exportCSV],
+  ['fmtHtml', exportHTML], ['fmtDocx', exportDOCX],
+  ['fmtMd', exportMarkdown], ['fmtPdf', exportPDF]
+];
+exportActions.forEach(([id, fn]) => {
+  const el = $('#' + id);
+  if (el) el.addEventListener('click', () => { hideModal('exportModal'); fn(); });
 });
 
-['chartTrend','chartPay','chartCat','chartProfit','chartHour','chartWeek','chartStore','chartRefund'].forEach(id=>{
-  const cv=document.getElementById(id);
-  if(cv) cv.addEventListener('click',e=>{ if(typeof cv._pick==='function') applyDrill(id,cv._pick(e)); });
+['chartTrend', 'chartPay', 'chartCat', 'chartProfit', 'chartHour', 'chartWeek', 'chartStore', 'chartRefund'].forEach(id => {
+  const cv = document.getElementById(id);
+  if (cv) cv.addEventListener('click', e => { if (typeof cv._pick === 'function') applyDrill(id, cv._pick(e)); });
 });
 
 
@@ -3107,16 +4034,16 @@ const GUIDE=[
   {
     tab:'④ 拿走结论',
     title:'第 4 步 · 把这份结论带走',
-    lead:'看完之后，通常会想发给合伙人、店长，或者存起来下周对比。不用截图，一键就能导出一份完整的报告。',
-    do:'点下面这个按钮，会下载一个网页文件。',
+    lead:'看完之后，通常会想发给合伙人、店长，或者存起来下周对比。不用截图，导出来就行。',
+    do:'点下面这个按钮，会打开一个「导出」小窗口，挑一个你顺手的格式。',
     bullets:[
-      '报告第一页是一张<b>封面</b>：门店、时间、对比区间、制表人、一句话结论、4 个大数字都在上面；后面才是数字、8 张图和建议。双击就能打开，不用联网，也能直接打印。',
-      '想自己再算一遍，可以点「导出表格」，拿到每一笔账的明细（含进价和赚的差价）；也可以在明细区<b>直接搜单号或商品名</b>。',
+      '结论单有 <b>4 种格式</b>：网页（双击就能看）、Word（方便接着改文字）、Markdown（贴进笔记）、PDF（打开打印窗口选「另存为 PDF」）。第一页都是封面：门店、时间、制表人、一句话结论、4 个大数字。',
+      '想自己再算一遍，点「导出表格」拿 <b>好看的 Excel</b>：列宽排好、首行冻结、金额千分位、退款标红、末尾合计；也有纯文本 CSV 给别的系统用。',
       '想只打印当前这一页，点「打印」就行。报告里还会单独列一节「已经处理过的事」，方便下周回看。'
     ],
-    see:'下载完打开看看：跟页面上是同一份结论，只是能离线带走。',
+    see:'挑完格式就会下载对应文件；选 PDF 会打开打印窗口，目标选「另存为 PDF」。',
     tip:'你的账目<b>只在这台电脑里算</b>，不会被传到网上。看完不想要了，点左栏「清空我的账目，回到示例」即可。',
-    action:'↓ 导出一份完整结论',
+    action:'↓ 打开导出窗口挑格式',
     fn:()=>{ hideModal('guideModal'); $('#btnReport').click(); }
   }
 ];

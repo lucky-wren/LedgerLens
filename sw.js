@@ -1,9 +1,9 @@
 /* 账镜 Service Worker · 零依赖
    策略：页面导航「网络优先、断网回退缓存」；静态资源「缓存优先」。
    发布新版本时改 CACHE 里的版本号即可让旧缓存自动失效。 */
-const CACHE = 'ledgerlens-1.1.0';
+const CACHE = 'ledgerlens-1.2.1';
 const SHELL = [
-  './', './index.html', './assets/app.css?v=1.1.0', './assets/app.js?v=1.1.0',
+  './', './index.html', './assets/app.css?v=1.2.1', './assets/app.js?v=1.2.1',
   './assets/favicon.svg', './manifest.webmanifest',
   './icon-192.png', './icon-512.png'
 ];
